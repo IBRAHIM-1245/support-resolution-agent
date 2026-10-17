@@ -1,0 +1,192 @@
+{
+  "name": "Ingest - Policy PDFs",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e5e94056-c94e-4df7-9042-e1432384c53a"
+    },
+    {
+      "parameters": {
+        "fileSelector": "/workspaces/support-resolution-agent/data/policies/*.pdf",
+        "options": {}
+      },
+      "name": "Read Policy PDFs",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "30987c5c-67e1-4653-8566-8a41456538eb"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "shaikmart-policies",
+          "mode": "list",
+          "cachedResultName": "shaikmart-policies"
+        },
+        "options": {
+          "pineconeNamespace": "policies"
+        }
+      },
+      "name": "Pinecone - Insert Policies",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "c0e2190d-e91c-4267-9097-a4e2e670e506",
+      "credentials": {
+        "pineconeApi": {
+          "id": "ExyAn4xPeKyckn6p",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        384,
+        224
+      ],
+      "id": "72daba83-fe55-4367-8eef-6d9cf596aa4e",
+      "credentials": {
+        "openAiApi": {
+          "id": "p5pnL3paJzBi5ljj",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "loader": "pdfLoader",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source_file",
+                "value": "={{ $binary.data.fileName }}"
+              },
+              {
+                "name": "policy",
+                "value": "={{ $binary.data.fileName.replace('.pdf', '') }}"
+              }
+            ]
+          }
+        }
+      },
+      "name": "Policy PDF Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        592,
+        224
+      ],
+      "id": "00420e22-8756-4e4c-ba77-b2a6f3dbeccc"
+    },
+    {
+      "parameters": {
+        "chunkSize": 800,
+        "chunkOverlap": 100,
+        "options": {}
+      },
+      "name": "Splitter (800 chars)",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        672,
+        432
+      ],
+      "id": "996c776e-b19d-4ba6-a60d-fa986e69d145"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Read Policy PDFs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Policy PDFs": {
+      "main": [
+        [
+          {
+            "node": "Pinecone - Insert Policies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone - Insert Policies",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy PDF Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone - Insert Policies",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Splitter (800 chars)": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Policy PDF Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "59dca413-854b-4cfc-8529-e9b7a9a459da",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
+  },
+  "nodeGroups": [],
+  "id": "cLkgLUh0lTULaJur",
+  "tags": []
+}

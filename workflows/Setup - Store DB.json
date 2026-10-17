@@ -1,0 +1,297 @@
+{
+  "name": "Setup - Store DB",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "18594893-c13a-41a2-9cc4-9a16f1cd4a97"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "DROP VIEW IF EXISTS order_lookup;\nDROP TABLE IF EXISTS orders;\nDROP TABLE IF EXISTS customers;\n\nCREATE TABLE customers (\n  customer_id TEXT PRIMARY KEY,\n  name        TEXT NOT NULL,\n  email       TEXT NOT NULL UNIQUE,\n  city        TEXT,\n  tier        TEXT\n);\n\nCREATE TABLE orders (\n  order_id          TEXT PRIMARY KEY,\n  customer_id       TEXT NOT NULL REFERENCES customers(customer_id),\n  product           TEXT NOT NULL,\n  category          TEXT,\n  amount            NUMERIC(10,2) NOT NULL,\n  payment_method    TEXT,\n  order_date        DATE,\n  status            TEXT,\n  est_delivery_date DATE,\n  delivered_date    DATE,\n  refund_status     TEXT\n);\n\nCREATE VIEW order_lookup AS\nSELECT o.order_id, o.customer_id, c.name AS customer_name, c.email AS customer_email,\n       o.product, o.category, o.amount, o.payment_method, o.order_date,\n       o.status, o.est_delivery_date, o.delivered_date, o.refund_status\nFROM orders o\nJOIN customers c ON c.customer_id = o.customer_id;\n\nGRANT USAGE ON SCHEMA public TO shaikmart_reader;\nGRANT SELECT ON order_lookup TO shaikmart_reader;",
+        "options": {}
+      },
+      "name": "Create Tables",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "cb3e8aec-f69d-4e3c-aaeb-e98d8e8c7eaa",
+      "credentials": {
+        "postgres": {
+          "id": "610sEeAfNsqkgh1f",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "/workspaces/support-resolution-agent/data/customers.csv",
+        "options": {}
+      },
+      "name": "Read Customers CSV",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "executeOnce": true,
+      "id": "9f3423ae-ce37-47c5-af46-7a07c25cf7c8"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "Parse Customers",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "fbef4148-741a-492f-b0cf-2d64806bb974"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "customers",
+          "mode": "list",
+          "cachedResultName": "customers"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "replaceEmptyStrings": true
+        }
+      },
+      "name": "Insert Customers",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        880,
+        0
+      ],
+      "id": "13bdf90a-bb57-47eb-a2bf-d18efea63056",
+      "credentials": {
+        "postgres": {
+          "id": "610sEeAfNsqkgh1f",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fileSelector": "/workspaces/support-resolution-agent/data/orders.csv",
+        "options": {}
+      },
+      "name": "Read Orders CSV",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        0
+      ],
+      "executeOnce": true,
+      "id": "73d760e8-13da-42c1-bd08-9b80d809731f"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "Parse Orders",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        0
+      ],
+      "id": "c68c9336-bf80-4ef1-b228-8ed780b2f3f8"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "value": "public",
+          "mode": "list",
+          "cachedResultName": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "orders",
+          "mode": "list",
+          "cachedResultName": "orders"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {
+          "replaceEmptyStrings": true
+        }
+      },
+      "name": "Insert Orders",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1552,
+        0
+      ],
+      "id": "96dcbc78-f989-416e-8a32-4e1bc9466832",
+      "credentials": {
+        "postgres": {
+          "id": "610sEeAfNsqkgh1f",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT\n  (SELECT COUNT(*) FROM customers) AS customers,\n  (SELECT COUNT(*) FROM orders)    AS orders;",
+        "options": {}
+      },
+      "name": "Check Row Counts",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1760,
+        0
+      ],
+      "executeOnce": true,
+      "id": "01268703-755c-47f0-a87f-cf0b3c6bb30a",
+      "credentials": {
+        "postgres": {
+          "id": "610sEeAfNsqkgh1f",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Create Tables",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Tables": {
+      "main": [
+        [
+          {
+            "node": "Read Customers CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Customers CSV": {
+      "main": [
+        [
+          {
+            "node": "Parse Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Customers": {
+      "main": [
+        [
+          {
+            "node": "Insert Customers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Customers": {
+      "main": [
+        [
+          {
+            "node": "Read Orders CSV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Orders CSV": {
+      "main": [
+        [
+          {
+            "node": "Parse Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Orders": {
+      "main": [
+        [
+          {
+            "node": "Insert Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Orders": {
+      "main": [
+        [
+          {
+            "node": "Check Row Counts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ddd684f2-6cb9-4a08-8508-9745f84063a8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
+  },
+  "nodeGroups": [],
+  "id": "pupvCElRiGJoap0C",
+  "tags": []
+}
