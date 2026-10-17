@@ -1,0 +1,322 @@
+{
+  "name": "Support Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ticket",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Ticket Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        112
+      ],
+      "id": "b29d17db-d3df-42b9-9469-b31011363c61",
+      "webhookId": "f14a7361-caa3-4587-a6c7-8af506486777"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "ticket_id",
+              "value": "={{ $json.body.ticket_id || ('T-' + $now.toFormat('yyyyMMddHHmmss')) }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "created_at",
+              "value": "={{ $json.body.created_at || $today.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "customer_email",
+              "value": "={{ ($json.body.customer_email || '').trim().toLowerCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "order_id",
+              "value": "={{ ($json.body.order_id || '').trim().toUpperCase() }}",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "message",
+              "value": "={{ ($json.body.message || '').trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Prepare Ticket",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -464,
+        112
+      ],
+      "id": "23a6ece8-f415-4f3f-b6fb-9e1cbc2a92df"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.message }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c2",
+              "leftValue": "={{ $json.customer_email }}",
+              "rightValue": "@",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Valid Ticket?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        112
+      ],
+      "id": "f50c35ec-9e05-4cd0-9bf6-97d7b017c4d3"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ticket_id: $('Prepare Ticket').item.json.ticket_id, status: 'passed_guardrail', ticket: $('Prepare Ticket').item.json } }}",
+        "options": {}
+      },
+      "name": "Reply (temporary)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        -160
+      ],
+      "id": "68972e8b-15ce-4a54-82f7-a00df48113fe"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'invalid', message: 'Please send a valid email and a message.' } }}",
+        "options": {
+          "responseCode": 400
+        }
+      },
+      "name": "Reply Invalid",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        240
+      ],
+      "id": "5487165c-8f64-40d8-84e0-b943cc53fe65"
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.message }}",
+        "guardrails": {
+          "jailbreak": {
+            "value": {
+              "threshold": 0.7
+            }
+          },
+          "pii": {
+            "value": {
+              "type": "selected",
+              "entities": [
+                "CREDIT_CARD",
+                "IN_PAN",
+                "IN_AADHAAR",
+                "IN_VEHICLE_REGISTRATION",
+                "IN_VOTER",
+                "IN_PASSPORT"
+              ]
+            }
+          },
+          "secretKeys": {
+            "value": {
+              "permissiveness": "balanced"
+            }
+          },
+          "topicalAlignment": {
+            "value": {
+              "threshold": 0.7,
+              "prompt": "The user is a customer of ShaikMart, an online electronics store in India.\nON-TOPIC: orders, order status, delivery, refunds, returns, cancellations,\nwarranty, product questions about ShaikMart products, store policies,\ncomplaints about an order. Messages may be in English or Hinglish.\nOFF-TOPIC: general knowledge, coding, maths, news, other companies,\npersonal advice, anything not about shopping at ShaikMart.\nReturn a high score only if the message is clearly OFF-TOPIC."
+            }
+          },
+          "customRegex": {
+            "regex": [
+              {
+                "name": "cvv_otp",
+                "value": "([Cc][Vv][Vv]|[Oo][Tt][Pp]|[Pp][Ii][Nn])\\s*(is|:|-)?\\s*\\d{3,8}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.guardrails",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "0bc47185-abf0-4dbe-bcf5-3c04a6181853",
+      "name": "Input Guardrail"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        80
+      ],
+      "id": "df7e5f10-212a-42b5-9f78-1f3b65ae6c6a",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "p5pnL3paJzBi5ljj",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { status: 'blocked', message: 'Sorry, I can only help with ShaikMart orders, deliveries, refunds and products. Please never share card numbers, CVV or OTP here.' } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        496,
+        32
+      ],
+      "id": "7323905f-9ea0-48e9-9f4a-3d8eb1901228",
+      "name": "Reply Blocked"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ticket Webhook": {
+      "main": [
+        [
+          {
+            "node": "Prepare Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Ticket": {
+      "main": [
+        [
+          {
+            "node": "Valid Ticket?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid Ticket?": {
+      "main": [
+        [
+          {
+            "node": "Input Guardrail",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply Invalid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Input Guardrail",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Input Guardrail": {
+      "main": [
+        [
+          {
+            "node": "Reply (temporary)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reply Blocked",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "fca096d9-babc-4105-a861-7442ac6151f2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
+  },
+  "nodeGroups": [],
+  "id": "PjKrzHKAvU5l3p0t",
+  "tags": []
+}
