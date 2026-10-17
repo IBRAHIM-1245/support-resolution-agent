@@ -1,0 +1,16 @@
+order_id,customer_id,product,category,amount,payment_method,order_date,status,est_delivery_date,delivered_date,refund_status
+ORD-1001,C001,Wireless Earbuds,audio,1499,UPI,2026-10-08,delivered,2026-10-12,2026-10-12,none
+ORD-1002,C002,Bluetooth Speaker,audio,3499,card,2026-10-05,delivered,2026-10-10,2026-10-10,none
+ORD-1003,C003,Smartwatch Fit 2,wearables,6999,card,2026-09-10,delivered,2026-09-15,2026-09-15,none
+ORD-1004,C004,USB-C Charger 65W,accessories,1299,UPI,2026-10-14,shipped,2026-10-18,,none
+ORD-1005,C005,Laptop Backpack,accessories,1899,COD,2026-10-15,processing,,,none
+ORD-1006,C006,Noise-Cancelling Headphones,audio,8999,card,2026-10-09,delivered,2026-10-13,2026-10-13,none
+ORD-1007,C007,Gift Card,digital,1000,UPI,2026-10-10,delivered,2026-10-10,2026-10-10,none
+ORD-1008,C008,Phone Case,accessories,499,UPI,2026-10-07,delivered,2026-10-11,2026-10-11,refunded
+ORD-1009,C009,Power Bank 20000mAh,accessories,2199,card,2026-10-02,shipped,2026-10-07,,none
+ORD-1010,C010,Mechanical Keyboard,computers,4599,card,2026-10-12,processing,,,none
+ORD-1011,C011,HD Webcam,computers,2499,UPI,2026-10-10,delivered,2026-10-14,2026-10-14,none
+ORD-1012,C012,HDMI Cable 2.1,accessories,349,COD,2026-10-09,delivered,2026-10-13,2026-10-13,none
+ORD-1013,C001,Mouse Pad,accessories,299,UPI,2026-09-28,delivered,2026-10-03,2026-10-03,none
+ORD-1014,C012,Smart Bulb 9W,smart home,799,UPI,2026-09-27,delivered,2026-10-02,2026-10-02,none
+ORD-1015,C003,Wireless Earbuds,audio,1499,card,2026-10-13,cancelled,,,refunded

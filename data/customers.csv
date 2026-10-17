@@ -1,0 +1,13 @@
+customer_id,name,email,city,tier
+C001,Riya Sharma,riya.sharma@example.com,Delhi,gold
+C002,Arjun Mehta,arjun.mehta@example.com,Mumbai,regular
+C003,Sneha Iyer,sneha.iyer@example.com,Chennai,regular
+C004,Rahul Verma,rahul.verma@example.com,Lucknow,regular
+C005,Fatima Khan,fatima.khan@example.com,Pune,gold
+C006,Vikram Rao,vikram.rao@example.com,Bengaluru,gold
+C007,Ananya Gupta,ananya.gupta@example.com,Jaipur,regular
+C008,Karthik Nair,karthik.nair@example.com,Kochi,regular
+C009,Pooja Reddy,pooja.reddy@example.com,Hyderabad,regular
+C010,Imran Qureshi,imran.qureshi@example.com,Bhopal,regular
+C011,Meera Pillai,meera.pillai@example.com,Kolkata,gold
+C012,Rohan Das,rohan.das@example.com,Guwahati,regular
