@@ -12,10 +12,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -688,
-        112
+        -3728,
+        320
       ],
-      "id": "b29d17db-d3df-42b9-9469-b31011363c61",
+      "id": "04a7144a-74e7-44a9-a941-a7dcebaf909c",
       "webhookId": "f14a7361-caa3-4587-a6c7-8af506486777"
     },
     {
@@ -60,10 +60,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -464,
-        112
+        -3520,
+        320
       ],
-      "id": "23a6ece8-f415-4f3f-b6fb-9e1cbc2a92df"
+      "id": "11ca095f-36eb-4775-9981-529360b3af2f"
     },
     {
       "parameters": {
@@ -103,25 +103,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -240,
-        112
+        -3296,
+        320
       ],
-      "id": "f50c35ec-9e05-4cd0-9bf6-97d7b017c4d3"
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ { ticket_id: $('Prepare Ticket').item.json.ticket_id, status: 'passed_guardrail', ticket: $('Prepare Ticket').item.json } }}",
-        "options": {}
-      },
-      "name": "Reply (temporary)",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        480,
-        -160
-      ],
-      "id": "68972e8b-15ce-4a54-82f7-a00df48113fe"
+      "id": "d873f14d-6e78-4c15-a06c-89e4d9ebfd59"
     },
     {
       "parameters": {
@@ -135,10 +120,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        400,
-        240
+        -3024,
+        544
       ],
-      "id": "5487165c-8f64-40d8-84e0-b943cc53fe65"
+      "id": "89e68982-c798-413e-b4c8-09dda22641ae"
     },
     {
       "parameters": {
@@ -156,7 +141,6 @@
                 "CREDIT_CARD",
                 "IN_PAN",
                 "IN_AADHAAR",
-                "IN_VEHICLE_REGISTRATION",
                 "IN_VOTER",
                 "IN_PASSPORT"
               ]
@@ -186,10 +170,10 @@
       "type": "@n8n/n8n-nodes-langchain.guardrails",
       "typeVersion": 2,
       "position": [
-        0,
-        -96
+        -3056,
+        160
       ],
-      "id": "0bc47185-abf0-4dbe-bcf5-3c04a6181853",
+      "id": "14b35544-826f-4b23-bc49-be23f41f8c1c",
       "name": "Input Guardrail"
     },
     {
@@ -206,10 +190,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        0,
-        80
+        -3056,
+        368
       ],
-      "id": "df7e5f10-212a-42b5-9f78-1f3b65ae6c6a",
+      "id": "fc56d828-09bf-4fe6-a435-2f06e910e75d",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -227,11 +211,368 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        496,
-        32
+        -2736,
+        352
       ],
-      "id": "7323905f-9ea0-48e9-9f4a-3d8eb1901228",
+      "id": "0a1a37ec-990c-4dad-8265-60db7853560d",
       "name": "Reply Blocked"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You classify customer support tickets for ShaikMart, an online electronics store in India.\nMessages may be in English or Hinglish.\n\nReturn ONLY a JSON object with exactly these keys:\n{\n  \"category\": \"refund\" | \"delivery\" | \"cancellation\" | \"product\" | \"other\",\n  \"order_id\": \"order ID written in the message like ORD-1234, else empty string\",\n  \"about_specific_order\": true or false,\n  \"wants_human\": true or false,\n  \"legal_threat\": true or false,\n  \"safety_issue\": true or false,\n  \"summary\": \"one short sentence\"\n}\n\nRules:\n- refund = wants money back, return, item broken/damaged/wrong/not working, refund status.\n- delivery = where is my order, late order, delivery time questions.\n- cancellation = wants to cancel an order.\n- product = questions about product features or specs.\n- other = anything else about the store (general policy questions go in the closest category).\n- about_specific_order = true if the customer talks about something THEY bought or THEIR order (\"my order\", \"my earbud is broken\", \"I want a refund\", \"where is my parcel\"). General questions like \"How many days does delivery take?\" or \"How do I return an item?\" are false.\n- wants_human = true only if they ask to talk to a human, agent or manager.\n- legal_threat = true if they mention legal action, lawyer, consumer court or police complaint.\n- safety_issue = true if they mention swelling battery, burning smell, smoke, sparks or fire.\n\nTicket message:\n{{ $('Prepare Ticket').item.json.message }}"
+      },
+      "name": "Classify Ticket",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -2640,
+        96
+      ],
+      "id": "224cce96-ebe7-47db-a6b1-30cb952c2fe3"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "json_object",
+          "temperature": 0
+        }
+      },
+      "name": "Classifier Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -2544,
+        272
+      ],
+      "id": "bac52f59-9bee-46ba-a4a2-a0401147621b",
+      "credentials": {
+        "openAiApi": {
+          "id": "p5pnL3paJzBi5ljj",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Turn the classifier's JSON text into clean fields and merge with the ticket.\nconst ticket = $('Prepare Ticket').first().json;\n\nlet c = {};\ntry {\n  c = JSON.parse($input.first().json.text);\n} catch (error) {\n  c = {};   // if the AI returned bad JSON, fall back to safe defaults\n}\n\nconst allowed = ['refund', 'delivery', 'cancellation', 'product', 'other'];\nconst category = allowed.includes(c.category) ? c.category : 'other';\nconst orderFromText = String(c.order_id || '').trim().toUpperCase();\n\nreturn [{\n  json: {\n    ...ticket,\n    order_id: ticket.order_id || orderFromText,   // form field wins, else from message\n    category: category,\n    about_specific_order: c.about_specific_order === true,\n    wants_human: c.wants_human === true,\n    legal_threat: c.legal_threat === true,\n    safety_issue: c.safety_issue === true,\n    summary: c.summary || ''\n  }\n}];"
+      },
+      "name": "Parse Classification",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2272,
+        112
+      ],
+      "id": "24487fdd-7d1a-4982-844e-ae1be61794cb"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM order_lookup WHERE order_id = $1 LIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ [ $json.order_id ] }}"
+        }
+      },
+      "name": "Look Up Order",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        -2048,
+        112
+      ],
+      "alwaysOutputData": true,
+      "id": "b0c14780-2355-4744-a0ef-6a296ce49749",
+      "credentials": {
+        "postgres": {
+          "id": "GEGXTLg2FYZo5swG",
+          "name": "Postgres - ShaikMart (read-only)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// RULES ENGINE: company rules decide WHAT to do. The AI only writes the words.\nconst t = $('Parse Classification').first().json;\nconst rows = $input.all().map(item => item.json).filter(row => row.order_id);\nconst order = rows.length > 0 ? rows[0] : null;\n\n// ---- date helpers (the ticket date is \"today\", support_rules section 7) ----\nfunction toDate(value) {\n  return new Date(String(value).slice(0, 10) + 'T00:00:00Z');\n}\nconst today = toDate(t.created_at);\nfunction daysSince(value) {\n  return Math.round((today - toDate(value)) / 86400000);\n}\nfunction businessDaysSince(value) {\n  const d = toDate(value);\n  let count = 0;\n  while (d < today) {\n    d.setUTCDate(d.getUTCDate() + 1);\n    const day = d.getUTCDay();\n    if (day !== 0 && day !== 6) count = count + 1;\n  }\n  return count;\n}\nfunction dateText(value) {\n  return value ? String(value).slice(0, 10) : '';\n}\n\nconst AUTO_REFUND_LIMIT = 2000;   // Rs, from refund policy section 4\nlet action = 'answer';\nlet reason = '';\nlet points = [];\nlet refundAmount = 0;\nconst orderTopics = ['refund', 'delivery', 'cancellation'];\nconst needsOrder = orderTopics.includes(t.category) && t.about_specific_order;\n\n// ---- 1. Escalations come first ----\nif (t.safety_issue) {\n  action = 'escalate';\n  reason = 'Safety issue reported';\n  points.push('Tell the customer to stop using the product immediately.');\n  points.push('Say a human support lead will contact them soon.');\n} else if (t.legal_threat || t.wants_human) {\n  action = 'escalate';\n  reason = t.legal_threat ? 'Legal threat' : 'Customer asked for a human';\n  points.push('Say the ticket has been escalated and a human support lead will contact them soon.');\n\n// ---- 2. Missing or wrong order ID ----\n} else if (t.order_id && !order) {\n  action = 'ask_info';\n  reason = 'Order ID not found';\n  points.push('Say we could not find order ' + t.order_id + ' and ask for the correct order ID.');\n} else if (!t.order_id && needsOrder) {\n  action = 'ask_info';\n  reason = 'Order ID missing';\n  points.push('Ask the customer for their order ID.');\n\n// ---- 3. Identity check: email must match the order ----\n} else if (order && String(order.customer_email).toLowerCase() !== t.customer_email) {\n  action = 'verify_identity';\n  reason = 'Email does not match the order';\n  points.push('Do not share any order details.');\n  points.push('Ask the customer to write from their registered email address (the one used for the order).');\n\n// ---- 4. Delivery questions about an order ----\n} else if (order && t.category === 'delivery') {\n  if (order.status === 'shipped' && businessDaysSince(order.est_delivery_date) > 3) {\n    action = 'escalate';\n    reason = 'Shipped order more than 3 business days late';\n    points.push('Apologise for the delay. Say the ticket has been escalated to our logistics team. Do not promise a new date.');\n  } else if (order.status === 'shipped') {\n    reason = 'Order is on the way';\n    points.push('Say the order is shipped and the estimated delivery date is ' + dateText(order.est_delivery_date) + '.');\n  } else if (order.status === 'delivered') {\n    reason = 'Order already delivered';\n    points.push('Say the order was delivered on ' + dateText(order.delivered_date) + '.');\n  } else if (order.status === 'processing') {\n    reason = 'Order not shipped yet';\n    points.push('Say the order is being processed and has not shipped yet.');\n  } else {\n    reason = 'Order is cancelled';\n    points.push('Say the order is cancelled.');\n  }\n\n// ---- 5. Refund requests ----\n} else if (order && t.category === 'refund') {\n  if (order.refund_status === 'refunded') {\n    action = 'deny';\n    reason = 'Order already refunded';\n    points.push('Say this order was already refunded, so it cannot be refunded again.');\n  } else if (order.category === 'digital') {\n    action = 'deny';\n    reason = 'Gift cards and digital products are non-refundable';\n    points.push('Explain that gift cards cannot be refunded.');\n  } else if (order.status === 'processing') {\n    reason = 'Order not shipped yet';\n    points.push('Say the order has not shipped yet, so they can cancel it free of charge for a full refund.');\n  } else if (order.status === 'shipped') {\n    reason = 'Order not delivered yet';\n    points.push('Say the order is on the way. After delivery they can request a return within 7 days.');\n  } else if (order.status === 'cancelled') {\n    reason = 'Order already cancelled';\n    points.push('Say the order is already cancelled.');\n  } else {\n    const days = daysSince(order.delivered_date);\n    if (days > 7) {\n      action = 'deny';\n      reason = 'Return window of 7 days is over (' + days + ' days since delivery)';\n      points.push('Explain the 7-day return window has ended. Offer a repair or replacement under the warranty.');\n    } else {\n      refundAmount = Number(order.amount);\n      const payNote = order.payment_method === 'COD'\n        ? 'Because it was a cash on delivery order, the refund goes as ShaikMart store credit or to a UPI ID they share.'\n        : 'The refund goes to the original payment method in 5-7 business days after approval.';\n      if (refundAmount <= AUTO_REFUND_LIMIT) {\n        action = 'refund_auto';\n        reason = 'Within 7 days and Rs ' + refundAmount + ' is within the auto-approval limit';\n        points.push('Confirm a full refund of Rs ' + refundAmount + ' is approved. ' + payNote + ' A pickup will be arranged.');\n      } else {\n        action = 'refund_approval';\n        reason = 'Within 7 days but Rs ' + refundAmount + ' is above the Rs 2,000 auto-approval limit';\n        points.push('Say the refund request of Rs ' + refundAmount + ' is under review by a support lead. Do NOT say it is approved.');\n      }\n    }\n  }\n\n// ---- 6. Cancellation requests ----\n} else if (order && t.category === 'cancellation') {\n  if (order.status === 'processing') {\n    action = 'cancel';\n    reason = 'Order not shipped yet, free cancellation';\n    refundAmount = order.payment_method === 'COD' ? 0 : Number(order.amount);\n    if (order.payment_method === 'COD') {\n      points.push('Confirm the order is cancelled. It was cash on delivery, so no payment was taken.');\n    } else {\n      points.push('Confirm the order is cancelled and Rs ' + refundAmount + ' will be refunded to the original payment method in 5-7 business days.');\n    }\n  } else if (order.status === 'cancelled') {\n    reason = 'Order already cancelled';\n    points.push('Say the order is already cancelled.');\n  } else if (order.status === 'shipped') {\n    action = 'deny';\n    reason = 'Shipped orders cannot be cancelled';\n    points.push('Explain shipped orders cannot be cancelled, but they can refuse the parcel at delivery.');\n  } else {\n    action = 'deny';\n    reason = 'Delivered orders cannot be cancelled';\n    points.push('Explain delivered orders cannot be cancelled, but they can request a return within 7 days of delivery.');\n  }\n\n// ---- 7. Everything else: answer from the policies ----\n} else {\n  reason = 'General question';\n  points.push('Answer the question using the policy_search tool. If the policies do not cover it, say a support executive will follow up.');\n}\n\n// Facts the AI may use. Never share order details if identity failed.\nconst orderFacts = (order && action !== 'verify_identity') ? {\n  order_id: order.order_id,\n  product: order.product,\n  amount_rs: Number(order.amount),\n  payment_method: order.payment_method,\n  order_date: dateText(order.order_date),\n  status: order.status,\n  est_delivery_date: dateText(order.est_delivery_date),\n  delivered_date: dateText(order.delivered_date),\n  refund_status: order.refund_status,\n  customer_name: order.customer_name\n} : 'not shared';\n\nconst facts = { today: t.created_at, category: t.category, order: orderFacts };\nconst block =\n  'CUSTOMER MESSAGE:\\n' + t.message +\n  '\\n\\nDECISION (made by company rules - do not change it): ' + action +\n  '\\nREASON: ' + reason +\n  '\\n\\nFACTS:\\n' + JSON.stringify(facts, null, 2) +\n  '\\n\\nREQUIRED POINTS:\\n- ' + points.join('\\n- ');\n\nreturn [{\n  json: {\n    ...t,\n    order_found: order !== null,\n    action: action,\n    reason: reason,\n    refund_amount: refundAmount,\n    points: points,\n    agent_input: block + '\\n\\nWrite the reply to the customer now.',\n    verify_input: block\n  }\n}];"
+      },
+      "name": "Decide Action",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1824,
+        112
+      ],
+      "id": "4a29d21b-ebb0-47eb-9b01-4e44d9490cb5"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.agent_input }}",
+        "options": {
+          "systemMessage": "You are the customer support assistant for ShaikMart, a fictional online electronics store in India.\n\nThe DECISION has already been made by company rules. Your job is only to explain it politely.\nWhat each decision means:\n- refund_auto: the refund IS APPROVED. Say so clearly. Never say \"under review\".\n- refund_approval: the refund is UNDER REVIEW by a support lead. Never say it is approved.\n- cancel: the order IS CANCELLED.\n- deny: the request cannot be done. Explain why using the policy.\n- escalate: a human team will take over. Do not promise outcomes or dates.\n- verify_identity: share NO order details. Ask them to write from their registered email.\n- ask_info: ask only for the missing information.\n- answer: answer the question.\n\nRules:\n1. Cover every REQUIRED POINT. Never promise more than the decision allows.\n2. Use the policy_search tool before explaining any rule, delivery time, return window, warranty or product fact.\n3. Only state facts from FACTS or policy_search results. Never invent dates, amounts or order details.\n4. Never ask for card numbers, CVV, OTP, passwords, PIN or Aadhaar.\n5. Plain English, polite, under 120 words. Reply in English even if the customer writes in Hinglish.\n6. Plain text only, no markdown.\n7. End with: - ShaikMart Support",
+          "maxIterations": 5
+        }
+      },
+      "name": "Write Reply",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -1600,
+        112
+      ],
+      "id": "99ad52a7-7a7c-4bea-a901-b2761ad72d2f"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "temperature": 0
+        }
+      },
+      "name": "Agent Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1712,
+        352
+      ],
+      "id": "ebf0c4bd-4de1-4554-9f27-1148377b243c",
+      "credentials": {
+        "openAiApi": {
+          "id": "p5pnL3paJzBi5ljj",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "policy_search",
+        "toolDescription": "Search ShaikMart store policies: refunds and returns, delivery times, cancellation, warranty, product FAQ and support rules. Use it before explaining any rule or product fact.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "shaikmart-policies",
+          "mode": "list",
+          "cachedResultName": "shaikmart-policies"
+        },
+        "options": {
+          "pineconeNamespace": "policies"
+        }
+      },
+      "name": "Policy Search",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        -1488,
+        352
+      ],
+      "id": "a826ea47-3eff-4379-b16b-8c25a4fb4c1d",
+      "credentials": {
+        "pineconeApi": {
+          "id": "ExyAn4xPeKyckn6p",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "name": "Policy Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1488,
+        544
+      ],
+      "id": "a7089633-0edd-4843-ae54-49cef757f840",
+      "credentials": {
+        "openAiApi": {
+          "id": "p5pnL3paJzBi5ljj",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You check a customer support reply before it is sent to the customer.\nReturn ONLY a JSON object: {\"ok\": true or false, \"problems\": [\"short reason\", ...]}\n\nWhat each DECISION means:\n- refund_auto: the refund IS APPROVED. The reply SHOULD say it is approved.\n- refund_approval: the refund is UNDER REVIEW. The reply must NOT say it is approved.\n- cancel: the order IS CANCELLED. The reply should confirm it.\n- deny: the request cannot be done. The reply must not promise it.\n- escalate: a human team takes over. The reply must not promise outcomes or dates.\n- verify_identity: the reply must NOT reveal any order detail (product, amount, status, dates).\n- ask_info: the reply asks for the missing information.\n- answer: the reply answers the question.\n\nSet \"ok\" to false ONLY if one of these is true:\n- The reply contradicts the meaning of the DECISION above.\n- The reply states an order date, amount or status that contradicts FACTS.\n- The reply asks for card numbers, CVV, OTP, passwords, PIN or Aadhaar.\n- The reply clearly misses one of the REQUIRED POINTS.\nPolicy or product facts that are not in FACTS came from the policy search; do not flag them.\nDo not flag style, tone or wording.\nIf nothing is wrong, return {\"ok\": true, \"problems\": []}.\n\n{{ $('Decide Action').item.json.verify_input }}\n\nREPLY TO CHECK:\n{{ $json.output }}"
+      },
+      "name": "Verify Reply",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.5,
+      "position": [
+        -1232,
+        112
+      ],
+      "id": "ec9095ee-d99c-4dac-8758-f76f73b83efb"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {
+          "responseFormat": "json_object",
+          "temperature": 0
+        }
+      },
+      "name": "Verifier Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -1232,
+        336
+      ],
+      "id": "b8ff559c-ca5f-4cca-8b20-f6d9eb0190a4",
+      "credentials": {
+        "openAiApi": {
+          "id": "p5pnL3paJzBi5ljj",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Use the AI reply only if the verifier approved it; otherwise send a safe template.\nconst d = $('Decide Action').first().json;\nconst draft = String($('Write Reply').first().json.output || '').trim();\n\nlet v = {};\ntry {\n  v = JSON.parse($input.first().json.text);\n} catch (error) {\n  v = { ok: false, problems: ['Verifier output could not be read'] };\n}\n\nconst fallback = {\n  answer: 'Thank you for contacting ShaikMart. A support executive will review your question and reply shortly. - ShaikMart Support',\n  refund_auto: 'Your refund request has been accepted. You will receive a confirmation with the pickup details shortly. - ShaikMart Support',\n  refund_approval: 'Your refund request is under review by our support lead. We will update you soon. - ShaikMart Support',\n  deny: 'Sorry, we are unable to process this request under our policy. A support executive will share more details shortly. - ShaikMart Support',\n  cancel: 'Your order has been cancelled. You will receive a confirmation shortly. - ShaikMart Support',\n  escalate: 'Your ticket has been escalated and a human support lead will contact you soon. - ShaikMart Support',\n  verify_identity: 'For your security, please write to us from the email address registered on the order. - ShaikMart Support',\n  ask_info: 'Please share your order ID so we can help you. - ShaikMart Support'\n};\n\nconst ok = v.ok === true && draft.length > 0;\n\nreturn [{\n  json: {\n    ...d,\n    reply: ok ? draft : fallback[d.action],\n    verifier_ok: ok,\n    verifier_problems: v.problems || [],\n    needs_human: d.action === 'refund_approval' || d.action === 'escalate'\n  }\n}];"
+      },
+      "name": "Finalize Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        112
+      ],
+      "id": "1389a123-376a-4d34-a3b8-135dea74e1a0"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { ticket_id: $json.ticket_id, category: $json.category, action: $json.action, needs_human: $json.needs_human, reply: $json.reply } }}",
+        "options": {}
+      },
+      "name": "Reply to Customer",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -592,
+        112
+      ],
+      "id": "6b9f0bd3-7b06-43cf-8095-7a390d1f9d18"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "h1",
+              "leftValue": "={{ $('Finalize Reply').item.json.needs_human }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Needs Human?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        112
+      ],
+      "id": "a2c7d164-a8dd-45fd-b392-c234c2ba4825"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "1667967017",
+        "message": "=🧾 ShaikMart ticket {{ $('Finalize Reply').item.json.ticket_id }}\nAction: {{ $('Finalize Reply').item.json.action }}\nReason: {{ $('Finalize Reply').item.json.reason }}\nOrder: {{ $('Finalize Reply').item.json.order_id || '-' }} | Amount: Rs {{ $('Finalize Reply').item.json.refund_amount }}\nCustomer: {{ $('Finalize Reply').item.json.customer_email }}\n\nMessage:\n{{ $('Finalize Reply').item.json.message }}\n\nReply sent to customer:\n{{ $('Finalize Reply').item.json.reply }}\n\nApprove this action?",
+        "approvalOptions": {
+          "values": {
+            "approvalType": "double"
+          }
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "name": "Ask Support Lead (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "dce0b98b-1908-4037-9bfd-b78916b2da13",
+      "webhookId": "55428c70-2506-4135-b56c-b46ca7a9cd2e",
+      "credentials": {
+        "telegramApi": {
+          "id": "KYpewPQN5rgX83Qo",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build one audit row. If a human was asked on Telegram, record their decision.\nconst f = $('Finalize Reply').first().json;\nconst input = $input.first().json;\n\nlet humanDecision = 'not_needed';\nif (f.needs_human) {\n  const approved = input.data && input.data.approved === true;\n  humanDecision = approved ? 'approved' : 'rejected';\n}\n\nreturn [{ json: { ...f, human_decision: humanDecision } }];"
+      },
+      "name": "Build Audit Row",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        112
+      ],
+      "id": "93019ba5-aa7b-4f67-8c1d-bac07e5e5a8c"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO support_audit (ticket_id, ticket_date, customer_email, order_id, category, action, reason, refund_amount, reply, verifier_ok, human_decision) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);",
+        "options": {
+          "queryReplacement": "={{ [ $json.ticket_id, $json.created_at, $json.customer_email, $json.order_id, $json.category, $json.action, $json.reason, $json.refund_amount, $json.reply, $json.verifier_ok, $json.human_decision ] }}"
+        }
+      },
+      "name": "Save Audit Log",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        352,
+        112
+      ],
+      "id": "5378e451-32a1-4360-acdb-3762f6b4db1c",
+      "credentials": {
+        "postgres": {
+          "id": "610sEeAfNsqkgh1f",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -291,7 +632,7 @@
       "main": [
         [
           {
-            "node": "Reply (temporary)",
+            "node": "Classify Ticket",
             "type": "main",
             "index": 0
           }
@@ -304,6 +645,189 @@
           }
         ]
       ]
+    },
+    "Classify Ticket": {
+      "main": [
+        [
+          {
+            "node": "Parse Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classifier Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classify Ticket",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Classification": {
+      "main": [
+        [
+          {
+            "node": "Look Up Order",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Look Up Order": {
+      "main": [
+        [
+          {
+            "node": "Decide Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide Action": {
+      "main": [
+        [
+          {
+            "node": "Write Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agent Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Write Reply",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Search": {
+      "ai_tool": [
+        [
+          {
+            "node": "Write Reply",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Policy Search",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Reply": {
+      "main": [
+        [
+          {
+            "node": "Verify Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifier Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Verify Reply",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Reply": {
+      "main": [
+        [
+          {
+            "node": "Finalize Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finalize Reply": {
+      "main": [
+        [
+          {
+            "node": "Reply to Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to Customer": {
+      "main": [
+        [
+          {
+            "node": "Needs Human?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Human?": {
+      "main": [
+        [
+          {
+            "node": "Ask Support Lead (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Audit Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ask Support Lead (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Build Audit Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Audit Row": {
+      "main": [
+        [
+          {
+            "node": "Save Audit Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -311,12 +835,12 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "fca096d9-babc-4105-a861-7442ac6151f2",
+  "versionId": "e562e81c-6852-4ac8-a87b-aa2c9a483e2f",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
   },
   "nodeGroups": [],
-  "id": "PjKrzHKAvU5l3p0t",
+  "id": "FQ2MoZY1A6qamy5H",
   "tags": []
 }
