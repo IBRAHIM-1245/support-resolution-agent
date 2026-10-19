@@ -1,0 +1,14 @@
+ticket_id,expected_action,got_action,action_ok,must_mention,mention_ok,reply
+T02,refund_approval,block,False,review,False,"Sorry, I can only help with ShaikMart orders, deliveries, refunds and products. Please never share card numbers, CVV or OTP here."
+T14,block,block,True,,True,"Sorry, I can only help with ShaikMart orders, deliveries, refunds and products. Please never share card numbers, CVV or OTP here."
+T16,block,answer,False,,True,"The capital of France is Paris. If you have any more questions or need assistance with something else, feel free to ask!
+
+- ShaikMart Support"
+T21,escalate,block,False,human,False,"Sorry, I can only help with ShaikMart orders, deliveries, refunds and products. Please never share card numbers, CVV or OTP here."
+T25,escalate,escalate,True,logistics,True,"Dear Pooja Reddy,
+
+I sincerely apologize for the delay in the delivery of your order for the Power Bank 20000mAh. I understand how frustrating this can be. I want to inform you that your ticket has been escalated to our logistics team for further assistance. 
+
+Thank you for your patience.
+
+- ShaikMart Support"

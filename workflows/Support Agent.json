@@ -154,7 +154,7 @@
           "topicalAlignment": {
             "value": {
               "threshold": 0.7,
-              "prompt": "The user is a customer of ShaikMart, an online electronics store in India.\nON-TOPIC: orders, order status, delivery, refunds, returns, cancellations,\nwarranty, product questions about ShaikMart products, store policies,\ncomplaints about an order. Messages may be in English or Hinglish.\nOFF-TOPIC: general knowledge, coding, maths, news, other companies,\npersonal advice, anything not about shopping at ShaikMart.\nReturn a high score only if the message is clearly OFF-TOPIC."
+              "prompt": "Customer support for ShaikMart, an online electronics store in India. Allowed topics: the customer's orders, order status, delivery and shipping times, refunds, returns, cancellations, warranty and repairs, damaged, defective or wrong items, product features and specs, store policies, and complaints about an order, including angry messages or threats of legal action or consumer court. Messages may be in English or Hinglish."
             }
           },
           "customRegex": {
@@ -407,7 +407,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You check a customer support reply before it is sent to the customer.\nReturn ONLY a JSON object: {\"ok\": true or false, \"problems\": [\"short reason\", ...]}\n\nWhat each DECISION means:\n- refund_auto: the refund IS APPROVED. The reply SHOULD say it is approved.\n- refund_approval: the refund is UNDER REVIEW. The reply must NOT say it is approved.\n- cancel: the order IS CANCELLED. The reply should confirm it.\n- deny: the request cannot be done. The reply must not promise it.\n- escalate: a human team takes over. The reply must not promise outcomes or dates.\n- verify_identity: the reply must NOT reveal any order detail (product, amount, status, dates).\n- ask_info: the reply asks for the missing information.\n- answer: the reply answers the question.\n\nSet \"ok\" to false ONLY if one of these is true:\n- The reply contradicts the meaning of the DECISION above.\n- The reply states an order date, amount or status that contradicts FACTS.\n- The reply asks for card numbers, CVV, OTP, passwords, PIN or Aadhaar.\n- The reply clearly misses one of the REQUIRED POINTS.\nPolicy or product facts that are not in FACTS came from the policy search; do not flag them.\nDo not flag style, tone or wording.\nIf nothing is wrong, return {\"ok\": true, \"problems\": []}.\n\n{{ $('Decide Action').item.json.verify_input }}\n\nREPLY TO CHECK:\n{{ $json.output }}"
+        "text": "=You check a customer support reply before it is sent to the customer.\nReturn ONLY a JSON object: {\"ok\": true or false, \"problems\": [\"short reason\", ...]}\n\nWhat each DECISION means:\n- refund_auto: the refund IS APPROVED. The reply SHOULD say it is approved.\n- refund_approval: the refund is UNDER REVIEW. The reply must NOT say it is approved.\n- cancel: the order IS CANCELLED. The reply should confirm it.\n- deny: the request cannot be done. The reply must not promise it.\n- escalate: a human team takes over. The reply must not promise outcomes or dates.\n- verify_identity: the reply must NOT reveal any order detail (product, amount, status, dates).\n- ask_info: the reply asks for the missing information.\n- answer: the reply answers the question.\n\nIMPORTANT: The writer looked up store policies with a search tool you cannot see.\nGeneral store facts (delivery times by city, return window, warranty period,\nproduct specs, refund timelines, delivery charges) are ALLOWED even if they are\nnot in FACTS. Never flag a reply just because a policy or product fact is missing from FACTS.\nFACTS only cover THIS customer's order. Check order details against FACTS.\n\nSet \"ok\" to false ONLY if one of these is true:\n- The reply contradicts the meaning of the DECISION above.\n- The reply states an order date, amount or status that contradicts FACTS.\n- The reply asks for card numbers, CVV, OTP, passwords, PIN or Aadhaar.\n- The reply clearly misses one of the REQUIRED POINTS.\nDo not flag style, tone or wording.\nIf nothing is wrong, return {\"ok\": true, \"problems\": []}.\n\n{{ $('Decide Action').item.json.verify_input }}\n\nREPLY TO CHECK:\n{{ $json.output }}"
       },
       "name": "Verify Reply",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
@@ -830,12 +830,12 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "e562e81c-6852-4ac8-a87b-aa2c9a483e2f",
+  "versionId": "b63d7deb-6914-4628-8af3-003fdabf10fb",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"

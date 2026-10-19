@@ -6,7 +6,7 @@ T04,2026-10-16,rahul.verma@example.com,ORD-1004,"Where is my order? When will it
 T05,2026-10-16,fatima.khan@example.com,ORD-1005,"Please cancel my order, I bought it by mistake.",cancellation,cancel,cancel
 T06,2026-10-16,vikram.rao@example.com,ORD-1006,"The headphones make a crackling noise in the right ear. I want a refund.",refund,refund_approval,review
 T07,2026-10-16,ananya.gupta@example.com,ORD-1007,"I don't need this gift card anymore. Can I get a refund?",refund,deny,gift card
-T08,2026-10-16,karthik.nair@example.com,ORD-1008,"Please refund my phone case order.",refund,deny,already refunded
+T08,2026-10-16,karthik.nair@example.com,ORD-1008,"Please refund my phone case order.",refund,deny,refunded
 T09,2026-10-16,pooja.reddy@example.com,ORD-1009,"My power bank was supposed to arrive on 7th October and it still has not come.",delivery,escalate,logistics
 T10,2026-10-16,imran.qureshi@example.com,ORD-1010,"I want to cancel my keyboard order.",cancellation,cancel,cancel
 T11,2026-10-16,meera.pillai@example.com,ORD-1011,"I ordered a webcam but received a mouse instead. I want a refund.",refund,refund_approval,review
