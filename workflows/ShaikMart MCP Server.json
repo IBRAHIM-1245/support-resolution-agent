@@ -1,0 +1,152 @@
+{
+  "name": "ShaikMart MCP Server",
+  "nodes": [
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Get the status of one ShaikMart order. Needs the order ID (like ORD-1001) AND the email used for that order. Returns nothing if they do not match (identity check).",
+        "operation": "executeQuery",
+        "query": "SELECT order_id, product, amount, status, order_date, est_delivery_date, delivered_date, refund_status\nFROM order_lookup\nWHERE order_id = upper(trim($1))\n  AND lower(customer_email) = lower(trim($2))\nLIMIT 1;",
+        "options": {
+          "queryReplacement": "={{ $fromAI('order_id', 'Order ID, for example ORD-1001', 'string') }},{{ $fromAI('customer_email', 'Email address used for the order', 'string') }}"
+        }
+      },
+      "name": "Get Order Status",
+      "type": "n8n-nodes-base.postgresTool",
+      "typeVersion": 2.5,
+      "position": [
+        -160,
+        240
+      ],
+      "id": "6d7ab9fb-a9cd-416d-b4d6-63e55720a1aa",
+      "credentials": {
+        "postgres": {
+          "id": "GEGXTLg2FYZo5swG",
+          "name": "Postgres - ShaikMart (read-only)"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "search_store_policies",
+        "toolDescription": "Search ShaikMart store policies: refunds and returns, delivery times, cancellation, warranty, product FAQ and support rules. Returns the matching policy text.",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "shaikmart-policies",
+          "mode": "list",
+          "cachedResultName": "shaikmart-policies"
+        },
+        "topK": 3,
+        "options": {
+          "pineconeNamespace": "policies"
+        }
+      },
+      "name": "Search Store Policies",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.1,
+      "position": [
+        160,
+        240
+      ],
+      "id": "944b2a35-c6aa-459c-bfbc-0ee647f19dc5",
+      "credentials": {
+        "pineconeApi": {
+          "id": "ExyAn4xPeKyckn6p",
+          "name": "Pinecone account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "name": "Policy Embeddings",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        240,
+        448
+      ],
+      "id": "43cc1d7a-0819-429c-af45-cdcfa81d5dc0",
+      "credentials": {
+        "openAiApi": {
+          "id": "p5pnL3paJzBi5ljj",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "bearerAuth",
+        "path": "shaikmart",
+        "instructions": "ShaikMart is a fictional electronics store. Use search_store_policies for questions about refunds, returns, delivery, cancellation, warranty and products. Use Get_Order_Status only when the user gives BOTH the order ID and the email used for the order. Never guess order details."
+      },
+      "name": "MCP Server Trigger",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "7b1f3c2e-5a9d-4e6b-8c1a-2f4d6e8a0b13",
+      "id": "276a2b66-d84c-432c-90bc-67d51f92ddd1",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "Eph8MmOxKh84lfY9",
+          "name": "Bearer Auth account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Order Status": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Store Policies": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Policy Embeddings": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Search Store Policies",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e5b77273-af28-40e2-b9c5-f12bbb5fce74",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
+  },
+  "nodeGroups": [],
+  "id": "8IrygwgqbOWF41UI",
+  "tags": []
+}

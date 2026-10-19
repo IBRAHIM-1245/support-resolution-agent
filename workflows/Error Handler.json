@@ -1,0 +1,90 @@
+{
+  "name": "Error Handler",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "7ecf9d96-4881-49e0-991b-f422ebbea0b8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build a short alert message from the error details n8n sends.\nconst e = $input.first().json;\nconst execution = e.execution || {};\nconst error = execution.error || (e.trigger && e.trigger.error) || {};\n\n// Telegram uses Markdown: remove characters that break it (_ * ` [ ])\nfunction clean(value) {\n  return String(value || '-').replace(/[_*`\\[\\]]/g, ' ');\n}\n\n// Indian time, easy to read\nconst time = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });\n\nconst text =\n  '🚨 ShaikMart workflow failed\\n' +\n  'Workflow: ' + clean(e.workflow && e.workflow.name) + '\\n' +\n  'Failed node: ' + clean(execution.lastNodeExecuted || (error.node && error.node.name)) + '\\n' +\n  'Error: ' + clean(String(error.message || 'Unknown error').slice(0, 300)) + '\\n' +\n  'Execution ID: ' + clean(execution.id) + '\\n' +\n  'Time: ' + clean(time);\n\nreturn [{ json: { text: text } }];"
+      },
+      "name": "Build Alert",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        0
+      ],
+      "id": "028815a0-9a67-4deb-b198-61fd52b29e24"
+    },
+    {
+      "parameters": {
+        "chatId": "1667967017",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "name": "Alert on Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        0
+      ],
+      "id": "cfce5849-1e45-4775-9966-5bd84b893c5e",
+      "webhookId": "4854912d-9652-4e30-a009-524e62e527bd",
+      "credentials": {
+        "telegramApi": {
+          "id": "KYpewPQN5rgX83Qo",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "Build Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Alert": {
+      "main": [
+        [
+          {
+            "node": "Alert on Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "86d91ca1-76f6-408e-b965-867d1ae27c38",
+  "meta": {
+    "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
+  },
+  "nodeGroups": [],
+  "id": "n4SIV2YWH4JZt8ee",
+  "tags": []
+}

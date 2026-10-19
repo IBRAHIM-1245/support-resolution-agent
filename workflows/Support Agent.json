@@ -15,7 +15,7 @@
         -3584,
         352
       ],
-      "id": "fc5dc900-ca65-493f-82f8-8272c78d044c",
+      "id": "273d729a-7247-4427-a0bb-977b1372c33b",
       "webhookId": "f14a7361-caa3-4587-a6c7-8af506486777"
     },
     {
@@ -63,7 +63,7 @@
         -3376,
         352
       ],
-      "id": "55cdffec-0a59-4ec6-ac0a-b7511b36203b"
+      "id": "f2f9a959-5340-4423-b13e-803f68d47b93"
     },
     {
       "parameters": {
@@ -106,7 +106,7 @@
         -3152,
         352
       ],
-      "id": "cb55d396-cf10-4ba8-b2a4-296264f7b490"
+      "id": "fcd6991a-b591-4467-ae68-decb77dcfcf4"
     },
     {
       "parameters": {
@@ -123,7 +123,7 @@
         -2880,
         576
       ],
-      "id": "58ed125c-54c5-4257-b909-5bdadc51de4f"
+      "id": "54f6eaf5-06f7-4651-87cc-29a634a68f19"
     },
     {
       "parameters": {
@@ -167,7 +167,7 @@
         -2912,
         192
       ],
-      "id": "97986d01-645f-4442-9858-d93175c740fc",
+      "id": "7b7aa039-c51b-401f-aa2f-4e8e3ece3c8b",
       "name": "Input Guardrail"
     },
     {
@@ -187,7 +187,7 @@
         -2912,
         400
       ],
-      "id": "2c9d5f8c-9179-43b9-8a3f-8f99d5bc7272",
+      "id": "85b96a04-1453-4dbf-8307-02b00cc2acfb",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -205,10 +205,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        -2576,
+        -2512,
         288
       ],
-      "id": "590df0cc-ee01-4c40-9798-c78fb05f11c1",
+      "id": "7cdb1197-519e-4a1a-9b63-955f7eb1a80f",
       "name": "Reply Blocked"
     },
     {
@@ -220,10 +220,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        -2496,
-        128
+        -2512,
+        32
       ],
-      "id": "a5df6483-e6c5-4d18-8cd1-95900a67ea62"
+      "id": "cf773a0f-42dc-44fd-b4f4-ca050d383cf0"
     },
     {
       "parameters": {
@@ -242,10 +242,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -2400,
-        304
+        -2352,
+        176
       ],
-      "id": "a2168408-b757-4e67-90fd-a887a45186c5",
+      "id": "1b518da0-9a32-438b-8227-accbf3f32087",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -264,7 +264,7 @@
         -2128,
         144
       ],
-      "id": "965cedc8-3f83-40d7-90c9-f4bdeb783735"
+      "id": "f6eca664-b8b2-4f34-9d19-c6d6096f638e"
     },
     {
       "parameters": {
@@ -282,7 +282,7 @@
         144
       ],
       "alwaysOutputData": true,
-      "id": "b50de84a-3e52-48a2-8e63-4b82ee5ca99e",
+      "id": "f6bb5292-8bc1-41a4-97ab-feb5ff2d5a1b",
       "credentials": {
         "postgres": {
           "id": "GEGXTLg2FYZo5swG",
@@ -292,7 +292,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// RULES ENGINE: company rules decide WHAT to do. The AI only writes the words.\nconst t = $('Parse Classification').first().json;\nconst rows = $input.all().map(item => item.json).filter(row => row.order_id);\nconst order = rows.length > 0 ? rows[0] : null;\n\n// ---- date helpers (the ticket date is \"today\", support_rules section 7) ----\nfunction toDate(value) {\n  return new Date(String(value).slice(0, 10) + 'T00:00:00Z');\n}\nconst today = toDate(t.created_at);\nfunction daysSince(value) {\n  return Math.round((today - toDate(value)) / 86400000);\n}\nfunction businessDaysSince(value) {\n  const d = toDate(value);\n  let count = 0;\n  while (d < today) {\n    d.setUTCDate(d.getUTCDate() + 1);\n    const day = d.getUTCDay();\n    if (day !== 0 && day !== 6) count = count + 1;\n  }\n  return count;\n}\nfunction dateText(value) {\n  return value ? String(value).slice(0, 10) : '';\n}\n\nconst AUTO_REFUND_LIMIT = 2000;   // Rs, from refund policy section 4\nlet action = 'answer';\nlet reason = '';\nlet points = [];\nlet refundAmount = 0;\nconst orderTopics = ['refund', 'delivery', 'cancellation'];\nconst needsOrder = orderTopics.includes(t.category) && t.about_specific_order;\n\n// ---- 1. Escalations come first ----\nif (t.safety_issue) {\n  action = 'escalate';\n  reason = 'Safety issue reported';\n  points.push('Tell the customer to stop using the product immediately.');\n  points.push('Say a human support lead will contact them soon.');\n} else if (t.legal_threat || t.wants_human) {\n  action = 'escalate';\n  reason = t.legal_threat ? 'Legal threat' : 'Customer asked for a human';\n  points.push('Say the ticket has been escalated and a human support lead will contact them soon.');\n\n// ---- 2. Missing or wrong order ID ----\n} else if (t.order_id && !order) {\n  action = 'ask_info';\n  reason = 'Order ID not found';\n  points.push('Say we could not find order ' + t.order_id + ' and ask for the correct order ID.');\n} else if (!t.order_id && needsOrder) {\n  action = 'ask_info';\n  reason = 'Order ID missing';\n  points.push('Ask the customer for their order ID.');\n\n// ---- 3. Identity check: email must match the order ----\n} else if (order && String(order.customer_email).toLowerCase() !== t.customer_email) {\n  action = 'verify_identity';\n  reason = 'Email does not match the order';\n  points.push('Do not share any order details.');\n  points.push('Ask the customer to write from their registered email address (the one used for the order).');\n\n// ---- 4. Delivery questions about an order ----\n} else if (order && t.category === 'delivery') {\n  if (order.status === 'shipped' && businessDaysSince(order.est_delivery_date) > 3) {\n    action = 'escalate';\n    reason = 'Shipped order more than 3 business days late';\n    points.push('Apologise for the delay. Say the ticket has been escalated to our logistics team. Do not promise a new date.');\n  } else if (order.status === 'shipped') {\n    reason = 'Your order is on the way. Estimated delivery date: ' + dateText(order.est_delivery_date);\n    points.push('Say the order is shipped and the estimated delivery date is ' + dateText(order.est_delivery_date) + '.');\n  } else if (order.status === 'delivered') {\n    reason = 'Your order was delivered on ' + dateText(order.delivered_date);\n    points.push('Say the order was delivered on ' + dateText(order.delivered_date) + '.');\n  } else if (order.status === 'processing') {\n    reason = 'Order not shipped yet';\n    points.push('Say the order is being processed and has not shipped yet.');\n  } else {\n    reason = 'Order is cancelled';\n    points.push('Say the order is cancelled.');\n  }\n\n// ---- 5. Refund requests ----\n} else if (order && t.category === 'refund') {\n  if (order.refund_status === 'refunded') {\n    action = 'deny';\n    reason = 'Order already refunded';\n    points.push('Say this order was already refunded, so it cannot be refunded again.');\n  } else if (order.category === 'digital') {\n    action = 'deny';\n    reason = 'Gift cards and digital products are non-refundable';\n    points.push('Explain that gift cards cannot be refunded.');\n  } else if (order.status === 'processing') {\n    reason = 'Order not shipped yet';\n    points.push('Say the order has not shipped yet, so they can cancel it free of charge for a full refund.');\n  } else if (order.status === 'shipped') {\n    reason = 'Order not delivered yet';\n    points.push('Say the order is on the way. After delivery they can request a return within 7 days.');\n  } else if (order.status === 'cancelled') {\n    reason = 'Order already cancelled';\n    points.push('Say the order is already cancelled.');\n  } else {\n    const days = daysSince(order.delivered_date);\n    if (days > 7) {\n      action = 'deny';\n      reason = 'Return window of 7 days is over (' + days + ' days since delivery); repair or replacement is available under warranty';\n      points.push('Explain the 7-day return window has ended. Offer a repair or replacement under the warranty.');\n    } else {\n      refundAmount = Number(order.amount);\n      const payNote = order.payment_method === 'COD'\n        ? 'Because it was a cash on delivery order, the refund goes as ShaikMart store credit or to a UPI ID they share.'\n        : 'The refund goes to the original payment method in 5-7 business days after approval.';\n      if (refundAmount <= AUTO_REFUND_LIMIT) {\n        action = 'refund_auto';\n        reason = 'Within 7 days and Rs ' + refundAmount + ' is within the auto-approval limit';\n        points.push('Confirm a full refund of Rs ' + refundAmount + ' is approved. ' + payNote + ' A pickup will be arranged.');\n      } else {\n        action = 'refund_approval';\n        reason = 'Within 7 days but Rs ' + refundAmount + ' is above the Rs 2,000 auto-approval limit';\n        points.push('Say the refund request of Rs ' + refundAmount + ' is under review by a support lead. Do NOT say it is approved.');\n      }\n    }\n  }\n\n// ---- 6. Cancellation requests ----\n} else if (order && t.category === 'cancellation') {\n  if (order.status === 'processing') {\n    action = 'cancel';\n    reason = 'Order not shipped yet, free cancellation';\n    refundAmount = order.payment_method === 'COD' ? 0 : Number(order.amount);\n    if (order.payment_method === 'COD') {\n      points.push('Confirm the order is cancelled. It was cash on delivery, so no payment was taken.');\n    } else {\n      points.push('Confirm the order is cancelled and Rs ' + refundAmount + ' will be refunded to the original payment method in 5-7 business days.');\n    }\n  } else if (order.status === 'cancelled') {\n    reason = 'Order already cancelled';\n    points.push('Say the order is already cancelled.');\n  } else if (order.status === 'shipped') {\n    action = 'deny';\n    reason = 'Shipped orders cannot be cancelled, but you can refuse the parcel at delivery';\n    points.push('Explain shipped orders cannot be cancelled, but they can refuse the parcel at delivery.');\n  } else {\n    action = 'deny';\n    reason = 'Delivered orders cannot be cancelled, but you can request a return within 7 days of delivery';\n    points.push('Explain delivered orders cannot be cancelled, but they can request a return within 7 days of delivery.');\n  }\n\n// ---- 7. Everything else: answer from the policies ----\n} else {\n  reason = 'General question';\n  points.push('Answer the question using the policy_search tool. If the policies do not cover it, say a support executive will follow up.');\n}\n\n// Facts the AI may use. Never share order details if identity failed.\nconst orderFacts = (order && action !== 'verify_identity') ? {\n  order_id: order.order_id,\n  product: order.product,\n  amount_rs: Number(order.amount),\n  payment_method: order.payment_method,\n  order_date: dateText(order.order_date),\n  status: order.status,\n  est_delivery_date: dateText(order.est_delivery_date),\n  delivered_date: dateText(order.delivered_date),\n  refund_status: order.refund_status,\n  customer_name: order.customer_name\n} : 'not shared';\n\nconst facts = { today: t.created_at, category: t.category, order: orderFacts };\nconst block =\n  'CUSTOMER MESSAGE:\\n' + t.message +\n  '\\n\\nDECISION (made by company rules - do not change it): ' + action +\n  '\\nREASON: ' + reason +\n  '\\n\\nFACTS:\\n' + JSON.stringify(facts, null, 2) +\n  '\\n\\nREQUIRED POINTS:\\n- ' + points.join('\\n- ');\n\nreturn [{\n  json: {\n    ...t,\n    order_found: order !== null,\n    action: action,\n    reason: reason,\n    refund_amount: refundAmount,\n    points: points,\n    agent_input: block + '\\n\\nWrite the reply to the customer now.',\n    verify_input: block\n  }\n}];"
+        "jsCode": "// RULES ENGINE: company rules decide WHAT to do. The AI only writes the words.\nconst t = $('Parse Classification').first().json;\nconst rows = $input.all().map(item => item.json).filter(row => row.order_id);\nconst order = rows.length > 0 ? rows[0] : null;\n\n// ---- date helpers (the ticket date is \"today\", support_rules section 7) ----\nfunction toDate(value) {\n  return new Date(String(value).slice(0, 10) + 'T00:00:00Z');\n}\nconst today = toDate(t.created_at);\nfunction daysSince(value) {\n  return Math.round((today - toDate(value)) / 86400000);\n}\nfunction businessDaysSince(value) {\n  const d = toDate(value);\n  let count = 0;\n  while (d < today) {\n    d.setUTCDate(d.getUTCDate() + 1);\n    const day = d.getUTCDay();\n    if (day !== 0 && day !== 6) count = count + 1;\n  }\n  return count;\n}\nfunction dateText(value) {\n  return value ? String(value).slice(0, 10) : '';\n}\n\nconst AUTO_REFUND_LIMIT = 2000;   // Rs, from refund policy section 4\nlet action = 'answer';\nlet reason = '';\nlet points = [];\nlet refundAmount = 0;\nconst orderTopics = ['refund', 'delivery', 'cancellation'];\nconst needsOrder = orderTopics.includes(t.category) && t.about_specific_order;\n\n// ---- 1. Escalations come first ----\nif (t.safety_issue) {\n  action = 'escalate';\n  reason = 'Safety issue reported';\n  points.push('Tell the customer to stop using the product immediately.');\n  points.push('Say a human support lead will contact them soon.');\n} else if (t.legal_threat || t.wants_human) {\n  action = 'escalate';\n  reason = t.legal_threat ? 'Legal threat' : 'Customer asked for a human';\n  points.push('Say the ticket has been escalated and a human support lead will contact them soon.');\n\n// ---- 2. Missing or wrong order ID ----\n} else if (t.order_id && !order) {\n  action = 'ask_info';\n  reason = 'Order ID not found';\n  points.push('Say we could not find order ' + t.order_id + ' and ask for the correct order ID.');\n} else if (!t.order_id && needsOrder) {\n  action = 'ask_info';\n  reason = 'Order ID missing';\n  points.push('Ask the customer for their order ID.');\n\n// ---- 3. Identity check: email must match the order ----\n} else if (order && String(order.customer_email).toLowerCase() !== t.customer_email) {\n  action = 'verify_identity';\n  reason = 'Email does not match the order';\n  points.push('Do not share any order details.');\n  points.push('Ask the customer to write from their registered email address (the one used for the order).');\n\n// ---- 4. Delivery questions about an order ----\n} else if (order && t.category === 'delivery') {\n  if (order.status === 'shipped' && businessDaysSince(order.est_delivery_date) > 3) {\n    action = 'escalate';\n    reason = 'Shipped order more than 3 business days late';\n    points.push('Apologise for the delay. Say the ticket has been escalated to our logistics team. Do not promise a new date.');\n  } else if (order.status === 'shipped') {\n    reason = 'Your order is on the way. Estimated delivery date: ' + dateText(order.est_delivery_date);\n    points.push('Say the order is shipped and the estimated delivery date is ' + dateText(order.est_delivery_date) + '.');\n  } else if (order.status === 'delivered') {\n    reason = 'Your order was delivered on ' + dateText(order.delivered_date);\n    points.push('Say the order was delivered on ' + dateText(order.delivered_date) + '.');\n  } else if (order.status === 'processing') {\n    reason = 'Order not shipped yet';\n    points.push('Say the order is being processed and has not shipped yet.');\n  } else {\n    reason = 'Order is cancelled';\n    points.push('Say the order is cancelled.');\n  }\n\n// ---- 5. Refund requests ----\n} else if (order && t.category === 'refund') {\n  if (order.refund_status === 'refunded') {\n    action = 'deny';\n    reason = 'Order already refunded';\n    points.push('Say this order was already refunded, so it cannot be refunded again.');\n  } else if (order.category === 'digital') {\n    action = 'deny';\n    reason = 'Gift cards and digital products are non-refundable';\n    points.push('Explain that gift cards cannot be refunded.');\n  } else if (order.status === 'processing') {\n    reason = 'Order not shipped yet';\n    points.push('Say the order has not shipped yet, so they can cancel it free of charge for a full refund.');\n  } else if (order.status === 'shipped') {\n    reason = 'Order not delivered yet';\n    points.push('Say the order is on the way. After delivery they can request a return within 7 days.');\n  } else if (order.status === 'cancelled') {\n    reason = 'Order already cancelled';\n    points.push('Say the order is already cancelled.');\n  } else {\n    const days = daysSince(order.delivered_date);\n    if (days > 7) {\n      action = 'deny';\n      reason = 'Return window of 7 days is over (' + days + ' days since delivery); repair or replacement is available under warranty';\n      points.push('Explain the 7-day return window has ended. Offer a repair or replacement under the warranty.');\n    } else {\n      refundAmount = Number(order.amount);\n      const payNote = order.payment_method === 'COD'\n        ? 'Because it was a cash on delivery order, the refund goes as ShaikMart store credit or to a UPI ID they share.'\n        : 'The refund goes to the original payment method in 5-7 business days after approval.';\n      if (refundAmount <= AUTO_REFUND_LIMIT) {\n        action = 'refund_auto';\n        reason = 'Within 7 days and Rs ' + refundAmount + ' is within the auto-approval limit';\n        points.push('Confirm a full refund of Rs ' + refundAmount + ' is approved. ' + payNote + ' A pickup will be arranged.');\n      } else {\n        action = 'refund_approval';\n        reason = 'Within 7 days but Rs ' + refundAmount + ' is above the Rs 2,000 auto-approval limit';\n        points.push('Say the refund request of Rs ' + refundAmount + ' is under review by a support lead. Do NOT say it is approved.');\n      }\n    }\n  }\n\n// ---- 6. Cancellation requests ----\n} else if (order && t.category === 'cancellation') {\n  if (order.status === 'processing') {\n    action = 'cancel';\n    reason = 'Order not shipped yet, free cancellation';\n    refundAmount = order.payment_method === 'COD' ? 0 : Number(order.amount);\n    if (order.payment_method === 'COD') {\n      points.push('Confirm the order is cancelled. It was cash on delivery, so no payment was taken.');\n    } else {\n      points.push('Confirm the order is cancelled and Rs ' + refundAmount + ' will be refunded to the original payment method in 5-7 business days.');\n    }\n  } else if (order.status === 'cancelled') {\n    reason = 'Order already cancelled';\n    points.push('Say the order is already cancelled.');\n  } else if (order.status === 'shipped') {\n    action = 'deny';\n    reason = 'Shipped orders cannot be cancelled, but you can refuse the parcel at delivery';\n    points.push('Explain shipped orders cannot be cancelled, but they can refuse the parcel at delivery.');\n  } else {\n    action = 'deny';\n    reason = 'Delivered orders cannot be cancelled, but you can request a return within 7 days of delivery';\n    points.push('Explain delivered orders cannot be cancelled, but they can request a return within 7 days of delivery.');\n  }\n\n// ---- 7. Everything else: answer from the policies ----\n} else {\n  reason = 'General question';\n  points.push('Answer the question using the policy_search tool. If the policies do not cover it, say a support executive will follow up.');\n}\n\n// Facts the AI may use. Never share order details if identity failed.\nconst orderFacts = (order && action !== 'verify_identity') ? {\n  order_id: order.order_id,\n  product: order.product,\n  amount_rs: Number(order.amount),\n  payment_method: order.payment_method,\n  order_date: dateText(order.order_date),\n  status: order.status,\n  est_delivery_date: dateText(order.est_delivery_date),\n  delivered_date: dateText(order.delivered_date),\n  refund_status: order.refund_status,\n  customer_name: order.customer_name\n} : 'not shared';\n\nconst facts = { today: t.created_at, category: t.category, order: orderFacts };\nconst block =\n  'CUSTOMER MESSAGE:\\n' + t.message +\n  '\\n\\nDECISION (made by company rules - do not change it): ' + action +\n  '\\nREASON: ' + reason +\n  '\\n\\nFACTS:\\n' + JSON.stringify(facts, null, 2) +\n  '\\n\\nREQUIRED POINTS:\\n- ' + points.join('\\n- ');\n\nreturn [{\n  json: {\n    ...t,\n    order_found: order !== null,\n    action: action,\n    reason: reason,\n    refund_amount: refundAmount,\n    order_facts: orderFacts,\n    points: points,\n    agent_input: block + '\\n\\nWrite the reply to the customer now.',\n    verify_input: block\n  }\n}];"
       },
       "name": "Decide Action",
       "type": "n8n-nodes-base.code",
@@ -301,7 +301,7 @@
         -1680,
         144
       ],
-      "id": "4c14dff6-c2fa-4b3f-8809-fd73ee0bebd8"
+      "id": "2ea8de70-18b7-45b8-802c-bccbe60bedac"
     },
     {
       "parameters": {
@@ -309,7 +309,8 @@
         "text": "={{ $json.agent_input }}",
         "options": {
           "systemMessage": "You are the customer support assistant for ShaikMart, a fictional online electronics store in India.\n\nThe DECISION has already been made by company rules. Your job is only to explain it politely.\nWhat each decision means:\n- refund_auto: the refund IS APPROVED. Say so clearly. Never say \"under review\".\n- refund_approval: the refund is UNDER REVIEW by a support lead. Never say it is approved.\n- cancel: the order IS CANCELLED.\n- deny: the request cannot be done. Explain why using the policy.\n- escalate: a human team will take over. Do not promise outcomes or dates.\n- verify_identity: share NO order details. Ask them to write from their registered email.\n- ask_info: ask only for the missing information.\n- answer: answer the question.\n\nRules:\n1. Cover every REQUIRED POINT. Never promise more than the decision allows.\n2. Use the policy_search tool before explaining any rule, delivery time, return window, warranty or product fact.\n3. Only state facts from FACTS or policy_search results. Never invent dates, amounts or order details.\n4. Never ask for card numbers, CVV, OTP, passwords, PIN or Aadhaar.\n5. Plain English, polite, under 120 words. Reply in English even if the customer writes in Hinglish.\n6. Plain text only, no markdown.\n7. End with: - ShaikMart Support",
-          "maxIterations": 5
+          "maxIterations": 5,
+          "returnIntermediateSteps": true
         }
       },
       "name": "Write Reply",
@@ -319,7 +320,7 @@
         -1456,
         144
       ],
-      "id": "caf30893-6f2f-4ee6-bb47-e5c5dc2fdcd4"
+      "id": "b110bc30-3d8f-42c0-a665-5c68f439dd4f"
     },
     {
       "parameters": {
@@ -340,7 +341,7 @@
         -1568,
         384
       ],
-      "id": "83c2b01e-c49f-4f9c-8c83-5e08f97a8598",
+      "id": "84c7f282-f404-47a2-858e-8920ded09de6",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -370,7 +371,7 @@
         -1344,
         384
       ],
-      "id": "b3b537e0-fe65-4080-908b-c6e5e90490f2",
+      "id": "44ef41fa-6abd-4b7e-89a1-f1fce048aa06",
       "credentials": {
         "pineconeApi": {
           "id": "ExyAn4xPeKyckn6p",
@@ -390,7 +391,7 @@
         -1344,
         576
       ],
-      "id": "ff8d682e-11c8-4551-bf0b-4c6c8c6100fd",
+      "id": "75af8de0-d5e1-4182-a8bd-916523b832e5",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -401,7 +402,7 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "=You check a customer support reply before it is sent to the customer.\nReturn ONLY a JSON object: {\"ok\": true or false, \"problems\": [\"short reason\", ...]}\n\nWhat each DECISION means:\n- refund_auto: the refund IS APPROVED. The reply SHOULD say it is approved.\n- refund_approval: the refund is UNDER REVIEW. The reply must NOT say it is approved.\n- cancel: the order IS CANCELLED. The reply should confirm it.\n- deny: the request cannot be done. The reply must not promise it.\n- escalate: a human team takes over. The reply must not promise outcomes or dates.\n- verify_identity: the reply must NOT reveal any order detail (product, amount, status, dates).\n- ask_info: the reply asks for the missing information.\n- answer: the reply answers the question.\n\nIMPORTANT: The writer looked up store policies with a search tool you cannot see.\nGeneral store facts (delivery times by city, return window, warranty period,\nproduct specs, refund timelines, delivery charges) are ALLOWED even if they are\nnot in FACTS. Never flag a reply just because a policy or product fact is missing from FACTS.\nFACTS only cover THIS customer's order. Check order details against FACTS.\n\nSet \"ok\" to false ONLY if one of these is true:\n- The reply contradicts the meaning of the DECISION above.\n- The reply states an order date, amount or status that contradicts FACTS.\n- The reply asks for card numbers, CVV, OTP, passwords, PIN or Aadhaar.\n- The reply clearly misses one of the REQUIRED POINTS.\nDo not flag style, tone or wording.\nIf nothing is wrong, return {\"ok\": true, \"problems\": []}.\n\n{{ $('Decide Action').item.json.verify_input }}\n\nREPLY TO CHECK:\n{{ $json.output }}"
+        "text": "=You check a customer support reply before it is sent to the customer.\nReturn ONLY a JSON object: {\"ok\": true or false, \"confidence\": a number from 0.0 to 1.0 showing how sure you are that the reply is correct and safe, \"problems\": [\"short reason\", ...]}\n\nWhat each DECISION means:\n- refund_auto: the refund IS APPROVED. The reply SHOULD say it is approved.\n- refund_approval: the refund is UNDER REVIEW. The reply must NOT say it is approved.\n- cancel: the order IS CANCELLED. The reply should confirm it.\n- deny: the request cannot be done. The reply must not promise it.\n- escalate: a human team takes over. The reply must not promise outcomes or dates.\n- verify_identity: the reply must NOT reveal any order detail (product, amount, status, dates).\n- ask_info: the reply asks for the missing information.\n- answer: the reply answers the question.\n\nIMPORTANT: The writer looked up store policies with a search tool you cannot see.\nGeneral store facts (delivery times by city, return window, warranty period,\nproduct specs, refund timelines, delivery charges) are ALLOWED even if they are\nnot in FACTS. Never flag a reply just because a policy or product fact is missing from FACTS.\nFACTS only cover THIS customer's order. Check order details against FACTS.\n\nSet \"ok\" to false ONLY if one of these is true:\n- The reply contradicts the meaning of the DECISION above.\n- The reply states an order date, amount or status that contradicts FACTS.\n- The reply asks for card numbers, CVV, OTP, passwords, PIN or Aadhaar.\n- The reply clearly misses one of the REQUIRED POINTS.\nDo not flag style, tone or wording.\nIf nothing is wrong, return {\"ok\": true, \"confidence\": <your score>, \"problems\": []}.\n\n{{ $('Decide Action').item.json.verify_input }}\n\nREPLY TO CHECK:\n{{ $json.output }}"
       },
       "name": "Verify Reply",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
@@ -410,7 +411,7 @@
         -1088,
         144
       ],
-      "id": "f0e0b43a-e52f-46ea-93ce-008b188e321d"
+      "id": "3e95c7e1-21b5-4805-af15-c9d096c46743"
     },
     {
       "parameters": {
@@ -432,7 +433,7 @@
         -1088,
         368
       ],
-      "id": "da8282c5-2975-493a-815e-2da8a8279c25",
+      "id": "a113b180-973b-478d-b934-326429e4ad1f",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -442,7 +443,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Use the AI reply only if the verifier approved it; otherwise send a safe template.\nconst d = $('Decide Action').first().json;\nconst draft = String($('Write Reply').first().json.output || '').trim();\n\nlet v = {};\ntry {\n  v = JSON.parse($input.first().json.text);\n} catch (error) {\n  v = { ok: false, problems: ['Verifier output could not be read'] };\n}\n\nconst fallback = {\n  answer: (d.order_found\n    ? d.reason + '.'\n    : 'Thank you for contacting ShaikMart. A support executive will review your question and reply shortly.') + ' - ShaikMart Support',\n  refund_auto: 'Your refund request has been accepted. You will receive a confirmation with the pickup details shortly. - ShaikMart Support',\n  refund_approval: 'Your refund request is under review by our support lead. We will update you soon. - ShaikMart Support',\n  deny: 'Sorry, we are unable to process this request. Reason: ' + d.reason + '. - ShaikMart Support',\n  cancel: 'Your order has been cancelled. You will receive a confirmation shortly. - ShaikMart Support',\n  escalate: (d.reason.includes('late')\n    ? 'Sorry for the delay. Your ticket has been escalated to our logistics team, who will contact you soon.'\n    : 'Your ticket has been escalated and a human support lead will contact you soon.') + ' - ShaikMart Support',\n  verify_identity: 'For your security, please write to us from your registered email address (the one used for the order). - ShaikMart Support',\n  ask_info: 'Please share your order ID so we can help you. - ShaikMart Support'\n};\n\nconst ok = v.ok === true && draft.length > 0;\n\nreturn [{\n  json: {\n    ...d,\n    reply: ok ? draft : fallback[d.action],\n    verifier_ok: ok,\n    verifier_problems: v.problems || [],\n    needs_human: d.action === 'refund_approval' || d.action === 'escalate'\n  }\n}];"
+        "jsCode": "// Use the AI reply only if the verifier approved it; otherwise send a safe template.\nconst d = $('Decide Action').first().json;\nconst draft = String($('Write Reply').first().json.output || '').trim();\n\nlet v = {};\ntry {\n  v = JSON.parse($input.first().json.text);\n} catch (error) {\n  v = { ok: false, problems: ['Verifier output could not be read'] };\n}\n\nconst fallback = {\n  answer: (d.order_found\n    ? d.reason + '.'\n    : 'Thank you for contacting ShaikMart. A support executive will review your question and reply shortly.') + ' - ShaikMart Support',\n  refund_auto: 'Your refund request has been accepted. You will receive a confirmation with the pickup details shortly. - ShaikMart Support',\n  refund_approval: 'Your refund request is under review by our support lead. We will update you soon. - ShaikMart Support',\n  deny: 'Sorry, we are unable to process this request. Reason: ' + d.reason + '. - ShaikMart Support',\n  cancel: 'Your order has been cancelled. You will receive a confirmation shortly. - ShaikMart Support',\n  escalate: (d.reason.includes('late')\n    ? 'Sorry for the delay. Your ticket has been escalated to our logistics team, who will contact you soon.'\n    : 'Your ticket has been escalated and a human support lead will contact you soon.') + ' - ShaikMart Support',\n  verify_identity: 'For your security, please write to us from your registered email address (the one used for the order). - ShaikMart Support',\n  ask_info: 'Please share your order ID so we can help you. - ShaikMart Support'\n};\n\nconst ok = v.ok === true && draft.length > 0;\n\n// ---- Evidence: what the agent searched and the policy passages it read ----\nconst steps = $('Write Reply').first().json.intermediateSteps || [];\nconst titles = {\n  refund_return_policy: 'Refund and Return Policy',\n  delivery_policy: 'Delivery Policy',\n  cancellation_policy: 'Cancellation Policy',\n  warranty_policy: 'Warranty Policy',\n  product_faq: 'Product FAQ',\n  support_rules: 'Support Agent Rules'\n};\n\n// The search words the agent typed into policy_search\nconst searches = [];\nfor (const step of steps) {\n  const input = step.action ? step.action.toolInput : null;\n  const query = (input && input.input) ? input.input : input;\n  if (typeof query === 'string' && query.trim()) searches.push(query.trim());\n}\n\n// Find every policy passage (pageContent) inside the tool results\nconst passages = [];\nfunction collect(value) {\n  if (typeof value === 'string') {\n    try { collect(JSON.parse(value)); } catch (error) { /* plain text, skip */ }\n  } else if (Array.isArray(value)) {\n    value.forEach(collect);\n  } else if (value && typeof value === 'object') {\n    if (typeof value.pageContent === 'string') {\n      passages.push(value);\n    } else {\n      Object.values(value).forEach(collect);\n    }\n  }\n}\nsteps.forEach(step => collect(step.observation));\n\n// Keep each passage once, with its policy name\nconst sources = [];\nconst seen = [];\nfor (const p of passages) {\n  const text = p.pageContent.replace(/\\s+/g, ' ').trim();\n  if (!text || seen.includes(text)) continue;\n  seen.push(text);\n  const key = String((p.metadata && (p.metadata.policy || p.metadata.source_file)) || '').replace('.pdf', '');\n  sources.push({ policy: titles[key] || key || 'Store policy', text: text.slice(0, 600) });\n}\n\n// Policy names (fallback: search the raw tool output for the file names)\nconst policiesUsed = [];\nfor (const s of sources) {\n  if (!policiesUsed.includes(s.policy)) policiesUsed.push(s.policy);\n}\nconst raw = JSON.stringify(steps);\nfor (const key in titles) {\n  if (raw.includes(key) && !policiesUsed.includes(titles[key])) policiesUsed.push(titles[key]);\n}\n\n// Order record to show in the app: null = no order involved\nlet orderShown = null;\nif (d.action === 'verify_identity') {\n  orderShown = 'not shared';\n} else if (d.order_found) {\n  orderShown = d.order_facts;\n}\n\nconst confidence = typeof v.confidence === 'number' ? v.confidence : null;\n\nreturn [{\n  json: {\n    ...d,\n    reply: ok ? draft : fallback[d.action],\n    verifier_ok: ok,\n    verifier_problems: v.problems || [],\n    verifier_confidence: confidence,\n    policies_used: policiesUsed,\n    policy_searches: searches,\n    policy_sources: sources,\n    order_shown: orderShown,\n    needs_human: d.action === 'refund_approval' || d.action === 'escalate'\n  }\n}];"
       },
       "name": "Finalize Reply",
       "type": "n8n-nodes-base.code",
@@ -451,12 +452,12 @@
         -704,
         144
       ],
-      "id": "1881a519-e10d-4444-9e2d-2c22e5ab68b8"
+      "id": "f9f2026a-5c08-4b44-ba9a-31abe7f91b3e"
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={{ { status: 'answered', ticket_id: $json.ticket_id, category: $json.category, action: $json.action, needs_human: $json.needs_human, reply: $json.reply } }}",
+        "responseBody": "={{ { status: 'answered', ticket_id: $json.ticket_id, category: $json.category, action: $json.action, needs_human: $json.needs_human, reply: $json.reply, reason: $json.reason, order: $json.order_shown, policies_used: $json.policies_used, policy_searches: $json.policy_searches, policy_sources: $json.policy_sources, verifier_ok: $json.verifier_ok, verifier_confidence: $json.verifier_confidence } }}",
         "options": {}
       },
       "name": "Reply to Customer",
@@ -466,7 +467,7 @@
         -448,
         144
       ],
-      "id": "52618f5d-fca4-4c9e-b4b8-4ee0d6bc29c5"
+      "id": "1400d9c6-b8df-4b1d-be48-807aae0f7e63"
     },
     {
       "parameters": {
@@ -500,13 +501,13 @@
         -224,
         144
       ],
-      "id": "adcff784-8201-4de9-9cef-91404f407daf"
+      "id": "fce5b8c9-5984-469b-adad-82f4d55c6ff2"
     },
     {
       "parameters": {
         "operation": "sendAndWait",
         "chatId": "1667967017",
-        "message": "=={{ (() => {\n  const f = $('Finalize Reply').item.json;\n  const clean = s => String(s || '').replace(/[_*`\\[\\]]/g, ' ');\n  return '🧾 ShaikMart ticket ' + clean(f.ticket_id) +\n    '\\nAction: ' + clean(f.action) +\n    '\\nReason: ' + clean(f.reason) +\n    '\\nOrder: ' + clean(f.order_id || '-') + ' | Amount: Rs ' + f.refund_amount +\n    '\\nCustomer: ' + clean(f.customer_email) +\n    '\\n\\nMessage:\\n' + clean(f.message) +\n    '\\n\\nReply sent to customer:\\n' + clean(f.reply) +\n    '\\n\\nApprove this action?';\n})() }}",
+        "message": "={{ (() => {\n  const f = $('Finalize Reply').item.json;\n  const clean = s => String(s || '').replace(/[_*`\\[\\]]/g, ' ');\n  return '🧾 ShaikMart ticket ' + clean(f.ticket_id) +\n    '\\nAction: ' + clean(f.action) +\n    '\\nReason: ' + clean(f.reason) +\n    '\\nOrder: ' + clean(f.order_id || '-') + ' | Amount: Rs ' + f.refund_amount +\n    '\\nCustomer: ' + clean(f.customer_email) +\n    '\\n\\nMessage:\\n' + clean(f.message) +\n    '\\n\\nReply sent to customer:\\n' + clean(f.reply) +\n    '\\n\\nApprove this action?';\n})() }}",
         "approvalOptions": {
           "values": {
             "approvalType": "double"
@@ -523,7 +524,7 @@
         0,
         0
       ],
-      "id": "ed2c1b53-bd3c-43bd-83fd-5f12ef81d166",
+      "id": "250305cb-a34a-43b6-b528-aeec55dee81d",
       "webhookId": "55428c70-2506-4135-b56c-b46ca7a9cd2e",
       "credentials": {
         "telegramApi": {
@@ -543,7 +544,7 @@
         288,
         144
       ],
-      "id": "5f4469c2-2576-49b0-b978-3866f9cbf557"
+      "id": "e5a360d6-a1d1-4a4a-b683-00c33e073d18"
     },
     {
       "parameters": {
@@ -560,7 +561,7 @@
         496,
         144
       ],
-      "id": "438a8231-4ef9-4404-a5ed-add1347128f6",
+      "id": "ca8a2a86-3e22-4658-8326-e5b99b6cae90",
       "credentials": {
         "postgres": {
           "id": "610sEeAfNsqkgh1f",
@@ -599,7 +600,7 @@
         -2016,
         304
       ],
-      "id": "b53e1e10-3daf-43e4-99d8-0bcd31aff135"
+      "id": "e18b0dd4-24c0-42e4-b9dc-dd2cd7b88c69"
     }
   ],
   "pinData": {},
@@ -880,11 +881,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "a385dc4b-a88d-4c77-8035-4e7aea7482dc",
+  "versionId": "46bdaed2-4c63-4f16-ab9c-0ea67576dc21",
   "meta": {
     "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
   },
   "nodeGroups": [],
-  "id": "A708hUxuPsaniZUq",
+  "id": "fsjHDjzyX1Yq7UHy",
   "tags": []
 }
