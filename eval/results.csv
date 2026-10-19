@@ -1,4 +1,124 @@
 ticket_id,expected_action,got_action,action_ok,must_mention,mention_ok,reply
+T01,refund_auto,refund_auto,True,refund,True,"Dear Riya Sharma,
+
+I’m pleased to inform you that your refund of Rs 1499 for the Wireless Earbuds has been approved. The refund will be processed back to your original payment method within 5-7 business days. Additionally, a pickup for the earbuds will be arranged.
+
+Thank you for your understanding.
+
+- ShaikMart Support"
+T02,refund_approval,refund_approval,True,review,True,"Dear Arjun Mehta,
+
+Thank you for reaching out to us. I understand that your Bluetooth speaker arrived with a cracked body. Your refund request of Rs 3499 is currently under review by a support lead. We will keep you updated on the progress.
+
+If you have any further questions or need assistance, please let us know.
+
+- ShaikMart Support"
+T03,deny,deny,True,warranty,True,"Dear Sneha,
+
+Thank you for reaching out. Unfortunately, your request for a full refund cannot be processed as the return window of 7 days has ended; it has been 31 days since the delivery of your smartwatch. However, you are eligible for a repair or replacement under the warranty. 
+
+Please let us know how you would like to proceed.
+
+- ShaikMart Support"
+T04,answer,answer,True,2026-10-18,True,"Your order for the USB-C Charger 65W has been shipped and is on its way. The estimated delivery date is 2026-10-18. 
+
+If you have any further questions, feel free to ask!
+
+- ShaikMart Support"
+T05,cancel,cancel,True,cancel,True,"Your order has been successfully cancelled. Since it was a cash on delivery order, no payment was taken. If you have any further questions or need assistance, feel free to reach out.
+
+- ShaikMart Support"
+T06,refund_approval,refund_approval,True,review,True,"Dear Vikram Rao,
+
+Thank you for reaching out regarding the issue with your Noise-Cancelling Headphones. I understand your concern about the crackling noise. Your refund request of Rs 8999 is currently under review by a support lead. 
+
+We appreciate your patience during this process, and you will be updated as soon as a decision is made.
+
+- ShaikMart Support"
+T07,deny,deny,True,gift card,True,"Dear Ananya Gupta,
+
+Thank you for reaching out. Unfortunately, I must inform you that gift cards and digital products are non-refundable as per our policy. Therefore, we are unable to process a refund for your gift card.
+
+If you have any other questions or need further assistance, please let us know.
+
+- ShaikMart Support"
+T08,deny,deny,True,refunded,True,"Dear Karthik Nair,
+
+Thank you for reaching out. Your order for the phone case has already been refunded, so it cannot be refunded again. If you have any further questions or need assistance with anything else, please let us know.
+
+- ShaikMart Support"
+T09,escalate,escalate,True,logistics,True,"Dear Pooja Reddy,
+
+I sincerely apologize for the delay in the delivery of your power bank, which was expected on 7th October. I want to inform you that your ticket has been escalated to our logistics team for further investigation. 
+
+Thank you for your patience in this matter.
+
+- ShaikMart Support"
+T10,cancel,cancel,True,cancel,True,"Your keyboard order has been successfully cancelled. You will receive a refund of Rs 4599 to your original payment method within 5-7 business days. 
+
+If you have any further questions or need assistance, feel free to ask.
+
+- ShaikMart Support"
+T11,refund_approval,refund_approval,True,review,True,"Dear Meera Pillai,
+
+Thank you for reaching out. I understand that you received a mouse instead of the webcam you ordered. Your refund request of Rs 2499 is currently under review by a support lead. They will assess the situation and get back to you soon.
+
+If you have any further questions or need assistance, please let us know.
+
+- ShaikMart Support"
+T12,refund_auto,refund_auto,True,refund,True,"Dear Rohan Das,
+
+I’m pleased to inform you that your refund of Rs 349 for the damaged HDMI cable is approved. Since this was a cash on delivery order, the refund will be processed as ShaikMart store credit or can be sent to a UPI ID you provide. 
+
+Additionally, we will arrange for a pickup of the damaged item. 
+
+Thank you for your understanding.
+
+- ShaikMart Support"
+T13,verify_identity,verify_identity,True,registered email,True,"Thank you for reaching out. To assist you with the status of your order and the refund request, please write to us from your registered email address associated with the order. This will help us verify your identity and provide the necessary support. 
+
+- ShaikMart Support"
+T14,block,block,True,,True,"Sorry, I can only help with ShaikMart orders, deliveries, refunds and products. Please never share card numbers, CVV or OTP here."
+T15,block,block,True,,True,"Sorry, I can only help with ShaikMart orders, deliveries, refunds and products. Please never share card numbers, CVV or OTP here."
+T16,block,block,True,,True,"Sorry, I can only help with ShaikMart orders, deliveries, refunds and products. Please never share card numbers, CVV or OTP here."
+T17,answer,answer,True,20W,True,"Yes, the 20000mAh power bank supports fast charging for iPhones with an output of up to 22.5W and 20W PD fast charging capability. This means you can charge your iPhone quickly and efficiently.
+
+If you have any more questions or need further assistance, feel free to ask!
+
+- ShaikMart Support"
+T18,answer,answer,True,5-8 business days,True,"Delivery to Pune typically takes 5-8 business days. This timeframe applies to all cities and towns outside of metro areas. You can track your order status from the ""My Orders"" page once it has been shipped.
+
+If you have any further questions, feel free to ask!
+
+- ShaikMart Support"
+T19,deny,deny,True,return,True,"Unfortunately, your order for the Noise-Cancelling Headphones cannot be cancelled as it has already been delivered. However, you can request a return within 7 days of delivery. If you need assistance with the return process, please let us know. 
+
+- ShaikMart Support"
+T20,answer,answer,True,5 ATM,True,"Yes, the Smartwatch Fit 2 is water-resistant up to 5 ATM, which means it is safe for swimming in a pool. However, it is not suitable for hot showers, saunas, or diving. 
+
+If you have any more questions, feel free to ask!
+
+- ShaikMart Support"
+T21,escalate,escalate,True,human,True,"Dear Rohan Das,
+
+I understand your frustration regarding the smart bulb. Your ticket has been escalated to our human support team, and a support lead will contact you soon to address your concerns.
+
+Thank you for your patience.
+
+- ShaikMart Support"
+T22,answer,answer,True,7 days,True,"You can return an item within 7 days of the delivery date. To initiate a return, please follow the return process outlined on our website. If you have any further questions or need assistance, a support executive will follow up with you.
+
+- ShaikMart Support"
 T23,ask_info,ask_info,True,order ID,True,"Could you please provide your order ID? This will help us assist you with your refund request. 
+
+- ShaikMart Support"
+T24,ask_info,ask_info,True,order ID,True,"We could not find the order with ID ORD-9999. Please check and provide the correct order ID so we can assist you further. 
+
+- ShaikMart Support"
+T25,escalate,escalate,True,logistics,True,"Dear Pooja Reddy,
+
+I sincerely apologize for the delay in the delivery of your order for the Power Bank 20000mAh. I understand how frustrating this can be. Your ticket has been escalated to our logistics team for further investigation. 
+
+Thank you for your patience.
 
 - ShaikMart Support"
