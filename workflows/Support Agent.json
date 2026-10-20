@@ -12,10 +12,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -3584,
-        352
+        -3824,
+        512
       ],
-      "id": "273d729a-7247-4427-a0bb-977b1372c33b",
+      "id": "efa4bc39-4441-4c1b-88e0-89e06f318338",
       "webhookId": "f14a7361-caa3-4587-a6c7-8af506486777"
     },
     {
@@ -60,10 +60,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -3376,
-        352
+        -3616,
+        512
       ],
-      "id": "f2f9a959-5340-4423-b13e-803f68d47b93"
+      "id": "4aa7c575-8576-4fc1-b1b1-16d8ad5dd1c5"
     },
     {
       "parameters": {
@@ -103,10 +103,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -3152,
-        352
+        -3392,
+        512
       ],
-      "id": "fcd6991a-b591-4467-ae68-decb77dcfcf4"
+      "id": "fb835e21-136b-4b7b-91ab-4b7fad24305a"
     },
     {
       "parameters": {
@@ -120,10 +120,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -2880,
-        576
+        -3120,
+        736
       ],
-      "id": "54f6eaf5-06f7-4651-87cc-29a634a68f19"
+      "id": "f1748329-fe1f-4538-9daa-7e452b942af5"
     },
     {
       "parameters": {
@@ -164,10 +164,10 @@
       "type": "@n8n/n8n-nodes-langchain.guardrails",
       "typeVersion": 2,
       "position": [
-        -2912,
-        192
+        -3152,
+        352
       ],
-      "id": "7b7aa039-c51b-401f-aa2f-4e8e3ece3c8b",
+      "id": "1e527537-6e62-4f81-9519-bf17326a9042",
       "name": "Input Guardrail"
     },
     {
@@ -184,10 +184,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        -2912,
-        400
+        -3152,
+        560
       ],
-      "id": "85b96a04-1453-4dbf-8307-02b00cc2acfb",
+      "id": "59511823-4c09-4e2a-81e0-cb91cab4cb79",
       "name": "OpenAI Chat Model",
       "credentials": {
         "openAiApi": {
@@ -205,10 +205,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.5,
       "position": [
-        -2512,
-        288
+        -2752,
+        448
       ],
-      "id": "7cdb1197-519e-4a1a-9b63-955f7eb1a80f",
+      "id": "3571537d-df42-4b67-9a61-a2ccdea36fca",
       "name": "Reply Blocked"
     },
     {
@@ -220,10 +220,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        -2512,
-        32
+        -2752,
+        192
       ],
-      "id": "cf773a0f-42dc-44fd-b4f4-ca050d383cf0"
+      "id": "614df8bc-cd47-4dac-8d07-eca24673515f"
     },
     {
       "parameters": {
@@ -242,10 +242,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -2352,
-        176
+        -2592,
+        336
       ],
-      "id": "1b518da0-9a32-438b-8227-accbf3f32087",
+      "id": "06d67189-6c15-4921-a4c3-6e02d62e9399",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -261,10 +261,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -2128,
-        144
+        -2368,
+        304
       ],
-      "id": "f6eca664-b8b2-4f34-9d19-c6d6096f638e"
+      "id": "2e549071-46a3-42aa-8b40-c905d75e2c3e"
     },
     {
       "parameters": {
@@ -278,11 +278,11 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        -1904,
-        144
+        -2144,
+        304
       ],
       "alwaysOutputData": true,
-      "id": "f6bb5292-8bc1-41a4-97ab-feb5ff2d5a1b",
+      "id": "d2d9aeb6-5b00-4da1-a9e3-0322c2975be2",
       "credentials": {
         "postgres": {
           "id": "GEGXTLg2FYZo5swG",
@@ -298,10 +298,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1680,
-        144
+        -1920,
+        304
       ],
-      "id": "2ea8de70-18b7-45b8-802c-bccbe60bedac"
+      "id": "7cc43ee4-a4aa-41d9-8851-10a2395a5623"
     },
     {
       "parameters": {
@@ -317,10 +317,10 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 1.7,
       "position": [
-        -1456,
-        144
+        -1696,
+        304
       ],
-      "id": "b110bc30-3d8f-42c0-a665-5c68f439dd4f"
+      "id": "02feb90c-9cee-45e5-9c3e-d91d6d6ff4cf"
     },
     {
       "parameters": {
@@ -338,10 +338,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -1568,
-        384
+        -1808,
+        544
       ],
-      "id": "84c7f282-f404-47a2-858e-8920ded09de6",
+      "id": "34b65897-f598-4632-8ade-66f0bd4aecd3",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -368,10 +368,10 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
       "typeVersion": 1.1,
       "position": [
-        -1344,
-        384
+        -1584,
+        544
       ],
-      "id": "44ef41fa-6abd-4b7e-89a1-f1fce048aa06",
+      "id": "98cbae76-f1e0-44fc-a361-03ec79ccd89f",
       "credentials": {
         "pineconeApi": {
           "id": "ExyAn4xPeKyckn6p",
@@ -388,10 +388,10 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1,
       "position": [
-        -1344,
-        576
+        -1584,
+        736
       ],
-      "id": "75af8de0-d5e1-4182-a8bd-916523b832e5",
+      "id": "21ae7259-0326-44fc-8596-2d366605842a",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -408,10 +408,10 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.5,
       "position": [
-        -1088,
-        144
+        -1328,
+        304
       ],
-      "id": "3e95c7e1-21b5-4805-af15-c9d096c46743"
+      "id": "6e9902d5-c4d9-4cda-bd2d-28738384e45a"
     },
     {
       "parameters": {
@@ -430,10 +430,10 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.2,
       "position": [
-        -1088,
-        368
+        -1328,
+        528
       ],
-      "id": "a113b180-973b-478d-b934-326429e4ad1f",
+      "id": "0e8748f3-d741-47a0-ac54-f08857d746d3",
       "credentials": {
         "openAiApi": {
           "id": "p5pnL3paJzBi5ljj",
@@ -449,10 +449,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -704,
-        144
+        -944,
+        304
       ],
-      "id": "f9f2026a-5c08-4b44-ba9a-31abe7f91b3e"
+      "id": "bfbc69c5-2e91-4032-b61f-434d63c50f4d"
     },
     {
       "parameters": {
@@ -464,10 +464,10 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        -448,
-        144
+        -688,
+        304
       ],
-      "id": "1400d9c6-b8df-4b1d-be48-807aae0f7e63"
+      "id": "5b6bd100-d54d-4563-babc-1626454c0c0c"
     },
     {
       "parameters": {
@@ -498,16 +498,16 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -224,
-        144
+        -464,
+        304
       ],
-      "id": "fce5b8c9-5984-469b-adad-82f4d55c6ff2"
+      "id": "d4758e39-1b7d-4d40-837f-741d89c43a4e"
     },
     {
       "parameters": {
         "operation": "sendAndWait",
         "chatId": "1667967017",
-        "message": "={{ (() => {\n  const f = $('Finalize Reply').item.json;\n  const clean = s => String(s || '').replace(/[_*`\\[\\]]/g, ' ');\n  return '🧾 ShaikMart ticket ' + clean(f.ticket_id) +\n    '\\nAction: ' + clean(f.action) +\n    '\\nReason: ' + clean(f.reason) +\n    '\\nOrder: ' + clean(f.order_id || '-') + ' | Amount: Rs ' + f.refund_amount +\n    '\\nCustomer: ' + clean(f.customer_email) +\n    '\\n\\nMessage:\\n' + clean(f.message) +\n    '\\n\\nReply sent to customer:\\n' + clean(f.reply) +\n    '\\n\\nApprove this action?';\n})() }}",
+        "message": "={{ (() => {\n  const f = $('Finalize Reply').item.json;\n  const clean = s => String(s || '').replace(/[_*`\\[\\]]/g, ' ');\n  let review = '';\n  try {\n    if ($('Refund Review (LangGraph)').isExecuted) {\n      review = $('Refund Review (LangGraph)').first().json.summary || '';\n    }\n  } catch (error) { review = ''; }\n  return '🧾 ShaikMart ticket ' + clean(f.ticket_id) +\n    '\\nAction: ' + clean(f.action) +\n    '\\nReason: ' + clean(f.reason) +\n    '\\nOrder: ' + clean(f.order_id || '-') + ' | Amount: Rs ' + f.refund_amount +\n    '\\nCustomer: ' + clean(f.customer_email) +\n    '\\n\\nMessage:\\n' + clean(f.message) +\n    '\\n\\nReply sent to customer:\\n' + clean(f.reply) +\n    (review ? '\\n\\n🤖 Refund review assistant:\\n' + clean(review) : '') +\n    '\\n\\nApprove this action?';\n})() }}",
         "approvalOptions": {
           "values": {
             "approvalType": "double"
@@ -521,10 +521,10 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        0,
-        0
+        240,
+        160
       ],
-      "id": "250305cb-a34a-43b6-b528-aeec55dee81d",
+      "id": "8f95844b-191d-415f-ba8a-740c4916d1f3",
       "webhookId": "55428c70-2506-4135-b56c-b46ca7a9cd2e",
       "credentials": {
         "telegramApi": {
@@ -541,10 +541,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        288,
-        144
+        528,
+        304
       ],
-      "id": "e5a360d6-a1d1-4a4a-b683-00c33e073d18"
+      "id": "b57363f8-337e-404e-aadb-58952777518a"
     },
     {
       "parameters": {
@@ -558,10 +558,10 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
       "position": [
-        496,
-        144
+        736,
+        304
       ],
-      "id": "ca8a2a86-3e22-4658-8326-e5b99b6cae90",
+      "id": "42c1ee0f-517c-48c4-96c3-da61a9fd7cda",
       "credentials": {
         "postgres": {
           "id": "610sEeAfNsqkgh1f",
@@ -597,10 +597,64 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -2016,
-        304
+        -2256,
+        464
       ],
-      "id": "e18b0dd4-24c0-42e4-b9dc-dd2cd7b88c69"
+      "id": "adf7c6a6-1757-4408-8dd9-e76537bcc0d2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "b1",
+              "leftValue": "={{ $('Finalize Reply').item.json.action }}",
+              "rightValue": "refund_approval",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Big Refund?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -240,
+        112
+      ],
+      "id": "d83af004-fde2-42f5-b0c9-91bbf4532041"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://127.0.0.1:8000/review-refund",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify((() => {\n  const f = $('Finalize Reply').item.json;\n  const o = f.order_facts || {};\n  return {\n    ticket_id: f.ticket_id,\n    ticket_date: f.created_at,\n    customer_email: f.customer_email,\n    order_id: f.order_id,\n    product: o.product,\n    amount_rs: o.amount_rs,\n    payment_method: o.payment_method,\n    delivered_date: o.delivered_date,\n    refund_status: o.refund_status,\n    message: f.message\n  };\n})()) }}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "name": "Refund Review (LangGraph)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8bb544ac-c3a8-4da5-8156-fbe42c9a1a5e",
+      "onError": "continueRegularOutput"
     }
   ],
   "pinData": {},
@@ -821,7 +875,7 @@
       "main": [
         [
           {
-            "node": "Ask Support Lead (Telegram)",
+            "node": "Big Refund?",
             "type": "main",
             "index": 0
           }
@@ -874,18 +928,47 @@
           }
         ]
       ]
+    },
+    "Big Refund?": {
+      "main": [
+        [
+          {
+            "node": "Refund Review (LangGraph)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ask Support Lead (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Refund Review (LangGraph)": {
+      "main": [
+        [
+          {
+            "node": "Ask Support Lead (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "46bdaed2-4c63-4f16-ab9c-0ea67576dc21",
+  "versionId": "bbc27e4c-cdd2-456a-8be9-d238192fcb83",
   "meta": {
     "instanceId": "8194a00deca1146420b1d7bfea13b3e39e792c2304c28e2c51034ce7adf1e780"
   },
   "nodeGroups": [],
-  "id": "fsjHDjzyX1Yq7UHy",
+  "id": "SlgeZnWjrFpYIdRI",
   "tags": []
 }
