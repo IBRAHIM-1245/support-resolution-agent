@@ -79,7 +79,9 @@ Other workflows:
 - The agent's search words and the **exact policy passages** it read.
 - The verifier's result and confidence score.
 
-![Evidence](docs/images/evidence.png)
+| Decision trail (rule + order record) | Policy passages the agent read |
+|---|---|
+| ![Decision trail](docs/images/decision_trail.png) | ![Policy sources](docs/images/policy_sources.png) |
 
 **Languages:** understands English, Hinglish and Hindi. It replies in English, so every reply can be checked against the policies.
 
@@ -123,6 +125,8 @@ Speed: about 10 seconds per ticket, mostly the LLM calls (measured in Langfuse).
 The second Streamlit page reads the audit table: number of tickets, the share resolved automatically, human decisions, the verifier pass rate and recent replies.
 
 ![Dashboard](docs/images/dashboard.png)
+
+![Approvals and recent tickets](docs/images/dashboard_tables.png)
 
 ---
 
