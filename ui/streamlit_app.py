@@ -180,7 +180,7 @@ else:
     # Decisions by type
     st.subheader("Decisions by type")
     counts = data["action"].map(lambda a: ACTION_LABELS.get(a, a)).value_counts()
-    st.bar_chart(counts)
+    st.bar_chart(counts, horizontal=True)
 
     # Human approvals
     st.subheader("Human approvals (Telegram)")
