@@ -2,7 +2,7 @@
 
 An AI customer-support agent for **ShaikMart**, a fictional Indian electronics store. It reads a customer ticket, checks the order in the database, looks up store policy, decides what to do (refund, cancel, deny, escalate, ask for info), writes the reply, checks the reply with a second AI, and asks a human on Telegram before anything risky.
 
-Built mostly as **low-code n8n workflows**, with Python only for the evaluation script and the Streamlit UI.
+Built mostly as **low-code n8n workflows**. Python is used for the evaluation script, the Streamlit UI, and a **LangGraph refund review sub-agent** served with **FastAPI**.
 
 > **Result: 25/25 correct decisions and 22/22 key facts** on a 25-ticket test set covering refunds, escalations, identity checks, Hinglish/Hindi messages and prompt-injection attacks.
 
@@ -19,6 +19,7 @@ Letting an LLM decide refunds is risky: it can be talked into things, and it can
 | **Company rules** (a JavaScript Code node) | Decide **what** to do: refund, deny, escalate… The same input always gives the same decision. |
 | **AI writer** (agent + policy search tool) | Only writes the **words** of the reply, using the decision, the order facts and the store policies. |
 | **AI verifier** (second LLM) | Checks the reply matches the decision and the facts. If it fails, a safe template reply is sent instead. |
+| **Refund review sub-agent** (LangGraph) | For refunds above Rs 2,000, prepares a recommendation for the human: history, risk flags, policy quote. |
 | **Human** (Telegram) | Approves refunds above Rs 2,000 and every escalation. |
 
 ---
@@ -41,7 +42,10 @@ flowchart LR
     I --> J[Finalize<br/>AI reply or safe template]
     J --> K[Reply to customer<br/>+ evidence]
     J --> L{Needs human?}
-    L -- yes --> M[Telegram approval<br/>Approve / Decline]
+    L -- yes --> Q{Refund above<br/>Rs 2,000?}
+    Q -- yes --> R[Refund review sub-agent<br/>FastAPI + LangGraph]
+    R --> M[Telegram approval<br/>Approve / Decline]
+    Q -- no --> M
     L -- no --> N
     M --> N[(Audit log<br/>support_audit)]
 ```
@@ -96,6 +100,7 @@ Other workflows:
 | Embeddings / vector DB | text-embedding-3-small, Pinecone |
 | Database | Neon Postgres (customers, orders, audit log) |
 | Human-in-the-loop | Telegram bot (Send and Wait for Response) |
+| Sub-agent | LangGraph (graph of steps), LangChain (OpenAI chat + embeddings, structured output), FastAPI + Uvicorn |
 | Observability | Langfuse (OpenTelemetry traces from n8n) |
 | Tools for other AI apps | n8n MCP Server Trigger |
 | UI | Streamlit (customer page + support dashboard) |
@@ -117,6 +122,45 @@ Other workflows:
 Full results: [`eval/results.csv`](eval/results.csv).
 
 Speed: about 10 seconds per ticket, mostly the LLM calls (measured in Langfuse).
+
+---
+
+## Refund review sub-agent (LangGraph + FastAPI)
+
+Refunds above Rs 2,000 need a human. Before the Telegram message is sent, n8n calls a small Python service, which returns a recommendation. **The human still decides.**
+
+```mermaid
+flowchart LR
+    S([n8n: POST /review-refund]) --> A[load_history<br/>Postgres, read-only]
+    A --> B[check_risk<br/>fixed rules, no AI]
+    B -- not eligible --> D[decline_without_ai]
+    B -- eligible --> C[find_policy<br/>Pinecone, refund policy only]
+    C --> E[recommend<br/>gpt-4o-mini, structured output]
+    D --> F([JSON answer to n8n])
+    E --> F
+```
+
+| Step | What it does |
+|---|---|
+| `load_history` | Counts the customer's other orders and past refunds |
+| `check_risk` | Return window (7 days), already refunded, high value (above Rs 5,000), 2+ past refunds, cash on delivery. Sets risk to low, medium or high |
+| `decline_without_ai` | If the policy already says no, it answers without calling the AI (no cost) |
+| `find_policy` | Embeds the question (LangChain) and searches Pinecone, filtered to the refund policy |
+| `recommend` | The LLM must return `approve`, `decline` or `needs_more_info`, plus reasons and a policy quote |
+
+Example added to the Telegram approval message:
+```
+🤖 Refund review assistant:
+Recommendation: APPROVE (risk: low)
+- Product arrived damaged as reported by customer.
+- Refund request is within the return window.
+- Customer has no prior refunds, indicating good standing.
+Policy: "A full refund is given if the item is damaged on arrival."
+```
+
+If the service is down, the n8n HTTP node continues and the approval is still sent, just without the recommendation.
+
+Endpoints: `GET /health`, `POST /review-refund`, and the automatic test page at `/docs`.
 
 ---
 
@@ -170,6 +214,9 @@ eval/
   test_tickets.csv              # 25 test tickets with expected decisions
   run_eval.py                   # sends tickets to the agent and scores them
   results.csv                   # latest results
+refund_agent/
+  graph.py                      # LangGraph steps (history, risk, policy, recommendation)
+  main.py                       # FastAPI service n8n calls
 scripts/
   n8nstart.sh                   # starts n8n in Codespaces with Langfuse tracing
 ui/
@@ -215,9 +262,14 @@ bash scripts/n8nstart.sh
 ```
 Import the JSON files from `workflows/`, attach your credentials, then **Publish** Support Agent and the MCP Server. Set **Error Handler** as the error workflow in their settings.
 
-**6. Run the UI and the eval:**
+**6. Start the refund review service** (in its own terminal; needs `OPENAI_API_KEY`, `PINECONE_API_KEY` and `DASHBOARD_DB_URL` in `.env`):
 ```bash
 pip install -r requirements.txt
+uvicorn refund_agent.main:app --port 8000
+```
+
+**7. Run the UI and the eval:**
+```bash
 streamlit run ui/streamlit_app.py
 python eval/run_eval.py
 ```
@@ -235,7 +287,7 @@ All data is **synthetic**. ShaikMart, its customers, orders and policies were cr
 - The verifier's confidence score is the model's own estimate, not a measured accuracy. Decisions never depend on it.
 - Replies are in English only (a design choice, so they can be verified).
 - Telegram approvals use a single chat ID. A real team would use a group with roles.
-- **Next:** a refund sub-agent in **LangGraph + LangChain**, served with **FastAPI**, called from n8n for complex refund cases.
+- The refund review service runs next to n8n in the same Codespace. In production it would be deployed as its own container.
 
 ---
 
