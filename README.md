@@ -72,7 +72,7 @@ Other workflows:
 **Safety**
 - Input guardrail blocks jailbreaks, card numbers, Aadhaar/PAN/passport/voter IDs, CVV/OTP/PIN and secret keys.
 - Off-topic questions are blocked by the classifier.
-- The database user is **read-only** and can only see one view (`order_lookup`).
+- The database user is **read-only**: it can read the `order_lookup` view, plus the audit table for the dashboard.
 - Every reply is checked by a verifier. If it fails, a safe template is sent.
 - A human approves risky actions on Telegram.
 - Every ticket is saved to an audit table.
