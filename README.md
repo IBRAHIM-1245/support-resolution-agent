@@ -293,4 +293,6 @@ All data is **synthetic**. ShaikMart, its customers, orders and policies were cr
 
 ## Author
 
-**SK Ibrahim**. BTech CSE (2025), MLR Institute of Technology, Hyderabad.
+**SK Ibrahim**
+- LinkedIn: [linkedin.com/in/sk-ibrahim-ai](https://www.linkedin.com/in/sk-ibrahim-ai)
+- GitHub: [github.com/IBRAHIM-1245](https://github.com/IBRAHIM-1245)
